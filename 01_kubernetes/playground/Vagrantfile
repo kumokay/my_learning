@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# configuration pararmeters
+VAR_TOKEN = "thisis.atokenigenerated"
+VAR_NW_PREFIX = "10.11.0"
+VAR_MASTER_IP = 100
+VAR_N_WORKERS = 2
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "kumokay/ubuntu16_kubeadm"
+
+  config.vm.define "master" do |node|
+    node.vm.hostname = "master"
+    node.vm.network :private_network, ip:"#{VAR_NW_PREFIX}.#{VAR_MASTER_IP}"
+    node.vm.provision :"shell", 
+      inline: <<-SHELL
+        sudo kubeadm init --pod-network-cidr=10.244.0.0/16 \
+          --apiserver-advertise-address #{VAR_NW_PREFIX}.#{VAR_MASTER_IP} \
+          --token #{VAR_TOKEN}
+      SHELL
+  end
+
+  (1..VAR_N_WORKERS).each do |i|
+    config.vm.define "worker#{i}" do |node|
+      node.vm.hostname = "worker#{i}"
+      node.vm.network :private_network, ip:"#{VAR_NW_PREFIX}.#{100+i}"
+      node.vm.provision :"shell", 
+        inline: "kubeadm join --token=#{VAR_TOKEN} --discovery-token-unsafe-skip-ca-verification #{VAR_NW_PREFIX}.#{VAR_MASTER_IP}:6443"
+    end
+  end
+end
