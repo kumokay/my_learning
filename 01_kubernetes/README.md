@@ -1,135 +1,215 @@
 # How to use kubernetes
 
+## Concepts
+
+This article explains different pieces that make up the Kubernetes: [ref](https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16).
+
 ## Environment setup
 
-Use vagrant to create multiple vms as the playground. See 00_vagrant [../00_vagrant] for more details.
+Use vagrant to create multiple vms as the playground. See [00_vagrant](../00_vagrant) for more details.
 
-In Vagrantfile, use vagrant box generated in 00_vagrant/kubeadm_box [../../00_vagrant/kubeadm_box/] as the basebox.
+In Vagrantfile, use vagrant box generated in [00_vagrant/kubeadm_box](../../00_vagrant/kubeadm_box/) as the basebox.
 
 This setup will create a cluster of 2 workers.
 
 ## Deploy applications
 
-### first make sure we have a cluster setup correctly
-```
+### first setup kubectl
+```console
 $ cd playground
 $ vagrant up
 $ vagrant ssh master
 
-# setup kubectl
-master$ mkdir -p $HOME/.kube
+vagrant@master$ mkdir -p $HOME/.kube
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
-# check node status
-master$ kubectl get nodes
+### check if cluster setup correctly
+```console
+vagrant@master:~$ kubectl get nodes
 NAME      STATUS     ROLES    AGE     VERSION
-master    NotReady   master   7m57s   v1.13.1
-worker1   NotReady   <none>   7m5s    v1.13.1
-worker2   NotReady   <none>   6m11s   v1.13.1
+master    NotReady   master   15m     v1.13.1
+worker1   NotReady   <none>   2m16s   v1.13.1
+worker2   NotReady   <none>   85s     v1.13.1
 ```
 
-### then create a pod
-ref: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
-```
-master$ wget https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
-master$ kubectl apply -f kube-flannel.yml
-master$ kubectl get pods --all-namespaces
-NAMESPACE     NAME                             READY   STATUS    RESTARTS   AGE
-kube-system   coredns-86c58d9df4-7k992         1/1     Running   0          5m2s
-kube-system   coredns-86c58d9df4-wlnm6         1/1     Running   0          5m2s
-kube-system   etcd-master                      1/1     Running   0          4m2s
-kube-system   kube-apiserver-master            1/1     Running   0          4m27s
-kube-system   kube-controller-manager-master   1/1     Running   0          4m28s
-kube-system   kube-flannel-ds-amd64-5lkrl      1/1     Running   0          71s
-kube-system   kube-flannel-ds-amd64-k46lf      1/1     Running   0          71s
-kube-system   kube-flannel-ds-amd64-zpwtp      1/1     Running   0          71s
-kube-system   kube-proxy-9wnrg                 1/1     Running   0          4m30s
-kube-system   kube-proxy-dk662                 1/1     Running   0          5m2s
-kube-system   kube-proxy-nt5lm                 1/1     Running   0          3m37s
-kube-system   kube-scheduler-master            1/1     Running   0          4m15s
+### then setup cluster networking
+
+We must install a pod network add-on so that your pods can communicate with each other.
+See [pod-network](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network)
+and more information about [flannel network](https://kubernetes.io/docs/concepts/cluster-administration/networking/#flannel)
+
+```console
+vagrant@master:~$ wget https://raw.githubusercontent.com/kumokay/my_learning/master/01_kubernetes/files/kube-flannel.yml
+vagrant@master:~$ kubectl apply -f kube-flannel.yml
+clusterrole.rbac.authorization.k8s.io/flannel created
+clusterrolebinding.rbac.authorization.k8s.io/flannel created
+serviceaccount/flannel created
+configmap/kube-flannel-cfg created
+daemonset.extensions/kube-flannel-ds-amd64 created
+daemonset.extensions/kube-flannel-ds-arm64 created
+daemonset.extensions/kube-flannel-ds-arm created
+daemonset.extensions/kube-flannel-ds-ppc64le created
+daemonset.extensions/kube-flannel-ds-s390x created
 ```
 
 ### deploy applications
-ref: https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
+ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 
-```
-master$ wget https://k8s.io/examples/application/deployment.yaml
-master$ kubectl apply -f deployment.yaml
-```
-
-### check pod IPs
-```
-master$ kubectl get pods -l app=nginx -o wide
-NAME                                READY   STATUS    RESTARTS   AGE   IP           NODE      NOMINATED NODE   READINESS GATES
-nginx-deployment-76bf4969df-jhmzd   1/1     Running   0          19m   10.244.1.2   worker1   <none>           <none>
-nginx-deployment-76bf4969df-rb76j   1/1     Running   0          19m   10.244.2.2   worker2   <none>           <none>
-
+#### create a deployment
+```console
+vagrant@master:~$ wget https://raw.githubusercontent.com/kumokay/my_learning/master/01_kubernetes/playground/files/nginx-app/run-my-nginx.yaml
+vagrant@master:~$ kubectl apply -f run-my-nginx.yaml
+deployment.apps/my-nginx created
 ```
 
-### check deployment status
+check deployment status
+```console
+vagrant@master:~$ kubectl get deployments -o wide
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES   SELECTOR
+my-nginx   2/2     2            2           9m10s   my-nginx     nginx    run=my-nginx
+
 ```
-master$ kubectl describe deployment nginx-deployment
-Name:                   nginx-deployment
+
+#### check pod status in this deployment
+```console
+vagrant@master:~$ kubectl get pods -l run=my-nginx -o wide
+NAME                        READY   STATUS    RESTARTS   AGE     IP           NODE      NOMINATED NODE   READINESS GATES
+my-nginx-64fc468bd4-9w69x   1/1     Running   0          9m57s   10.244.1.4   worker1   <none>           <none>
+my-nginx-64fc468bd4-fr4wp   1/1     Running   0          9m57s   10.244.2.2   worker2   <none>           <none>
+```
+
+#### check more deployment details
+```console
+vagrant@master:~$ kubectl describe deployment my-nginx
+Name:                   my-nginx
 Namespace:              default
-CreationTimestamp:      Tue, 01 Jan 2019 00:52:54 +0000
-...
+CreationTimestamp:      Wed, 02 Jan 2019 18:44:09 +0000
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 1
+                        kubectl.kubernetes.io/last-applied-configuration:
+                          {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"my-nginx","namespace":"default"},"spec":{"replicas":2,"se...
+Selector:               run=my-nginx
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  run=my-nginx
   Containers:
-   nginx:
-    Image:        nginx:1.7.9
+   my-nginx:
+    Image:        nginx
     Port:         80/TCP
     Host Port:    0/TCP
-...
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
 Conditions:
   Type           Status  Reason
   ----           ------  ------
   Available      True    MinimumReplicasAvailable
   Progressing    True    NewReplicaSetAvailable
 OldReplicaSets:  <none>
-NewReplicaSet:   nginx-deployment-76bf4969df (2/2 replicas created)
+NewReplicaSet:   my-nginx-64fc468bd4 (2/2 replicas created)
 Events:
-  Type    Reason             Age   From                   Message
-  ----    ------             ----  ----                   -------
-  Normal  ScalingReplicaSet  25s   deployment-controller  Scaled up replica set nginx-deployment-76bf4969df to 2
+  Type    Reason             Age    From                   Message
+  ----    ------             ----   ----                   -------
+  Normal  ScalingReplicaSet  6m17s  deployment-controller  Scaled up replica set my-nginx-64fc468bd4 to 2
 ```
 
-## Access applications
+## Connecting applications with services
 
-There are multiple ways. Here we create a service to access it.
-
-ref: https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/
+ref: https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
 
 ### create a Service object that exposes the deployment
-```
-master$ kubectl expose deployments nginx-deployment --type=NodePort --name=nginx-service
 
-# get the exposed port
-master$ kubectl describe services nginx-service | grep NodePort
+There are multiple ways to do it. The easiest way is to use NodePort. Here is an article about different ways to get external traffic into your cluster [ref](https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0)
+
+#### create a service
+```console
+vagrant@master:~$ wget https://raw.githubusercontent.com/kumokay/my_learning/master/01_kubernetes/playground/files/nginx-app/nginx-svc.yaml
+vagrant@master:~$ kubectl create -f nginx-svc.yaml
+service/my-nginx created
+```
+
+#### check service status
+```console
+vagrant@master:~$  kubectl get svc my-nginx -o wide
+NAME       TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE     SELECTOR
+my-nginx   NodePort   10.100.213.194   <none>        8080:31839/TCP   4m56s   run=my-nginx
+```
+
+#### check service details
+```console
+vagrant@master:~$ kubectl describe service my-nginx
+Name:                     my-nginx
+Namespace:                default
+Labels:                   run=my-nginx
+Annotations:              <none>
+Selector:                 run=my-nginx
 Type:                     NodePort
-NodePort:                 <unset>  30735/TCP                   <none>
+IP:                       10.100.213.194
+Port:                     http  8080/TCP
+TargetPort:               80/TCP
+NodePort:                 http  31839/TCP
+Endpoints:                10.244.1.4:80,10.244.2.2:80
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
 ```
 
-### check which nodes are running the application
-```
-master$ kubectl get pods -l app=nginx -o wide
-NAME                                READY   STATUS    RESTARTS   AGE   IP           NODE      NOMINATED NODE   READINESS GATES
-nginx-deployment-76bf4969df-jhmzd   1/1     Running   0          19m   10.244.1.2   worker1   <none>           <none>
-nginx-deployment-76bf4969df-rb76j   1/1     Running   0          19m   10.244.2.2   worker2   <none>           <none>
-```
+#### use the Endpoints' public IP and NodePort to access the service
 
-### use the node's public ip and NodePort to access the service
-```
-master$ curl http://10.11.0.101:30735
-master$ curl http://10.11.0.102:30735
+#### check pod status in this deployment
 
-
-
+10.244.1.4:80,10.244.2.2:80 corresponds to worker1 and worker2 respectively.
+```console
+vagrant@master:~$ kubectl get pods -l run=my-nginx -o wide
+NAME                        READY   STATUS    RESTARTS   AGE     IP           NODE      NOMINATED NODE   READINESS GATES
+my-nginx-64fc468bd4-9w69x   1/1     Running   0          9m57s   10.244.1.4   worker1   <none>           <none>
+my-nginx-64fc468bd4-fr4wp   1/1     Running   0          9m57s   10.244.2.2   worker2   <none>           <none>
 ```
 
+The private network IPs of worker1 and worker2 are 10.11.0.101, 10.11.0.102 respectively.
+(see Vagrantfile: `node.vm.network :private_network, ip:"#{VAR_NW_PREFIX}.#{100+i}"`)
 
+```console
+vagrant@master~$ curl http://10.11.0.101:31839
+vagrant@master~$ curl http://10.11.0.102:31839
+```
 
+### Clean-up the applications
 
+```
+vagrant@master:~$ kubectl delete deployments,svc my-nginx
+deployment.extensions "my-nginx" deleted
+service "my-nginx" deleted
+```
 
+### create deployment and service in one step
 
+Option 1: write everything in one file
+```console
+vagrant@master:~$ cat nginx-svc.yaml run-my-nginx.yaml > nginx-app.yaml
+vagrant@master:~$ kubectl create -f nginx-app.yaml
+service/my-nginx created
+deployment.apps/my-nginx created
+vagrant@master:~$ kubectl delete -f nginx-app.yaml
+service "my-nginx" deleted
+deployment.apps "my-nginx" deleted
 
+```
 
+Option 2: put everything in one folder
+```console
+vagrant@master:~$ mkdir nginx-app
+vagrant@master:~$ mv nginx-svc.yaml nginx-app/.
+vagrant@master:~$ mv run-my-nginx.yaml nginx-app/.
+vagrant@master:~$ kubectl create -f nginx-app
+service/my-nginx created
+deployment.apps/my-nginx created
+vagrant@master:~$ kubectl delete -f nginx-app
+service "my-nginx" deleted
+deployment.apps "my-nginx" deleted
+```
