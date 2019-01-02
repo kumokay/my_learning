@@ -6,9 +6,9 @@ This article explains different pieces that make up the Kubernetes: [ref](https:
 
 ## Environment setup
 
-Use vagrant to create multiple vms as the playground. See [00_vagrant](../00_vagrant) for more details.
+Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.
 
-In Vagrantfile, use vagrant box generated in [00_vagrant/kubeadm_box](../../00_vagrant/kubeadm_box/) as the basebox.
+In Vagrantfile, use [ubuntu16_kubeadm](https://app.vagrantup.com/kumokay/boxes/ubuntu16_kubeadm) as the basebox. This box is generated using the script in [00_vagrant/kubeadm_box](../../00_vagrant/kubeadm_box/). 
 
 This setup will create a cluster of 2 workers.
 
