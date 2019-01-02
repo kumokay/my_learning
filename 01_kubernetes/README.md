@@ -57,7 +57,7 @@ daemonset.extensions/kube-flannel-ds-s390x created
 ### deploy applications
 ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
 
-#### create a deployment
+create a deployment
 ```console
 vagrant@master:~$ wget https://raw.githubusercontent.com/kumokay/my_learning/master/01_kubernetes/playground/files/nginx-app/run-my-nginx.yaml
 vagrant@master:~$ kubectl apply -f run-my-nginx.yaml
@@ -72,7 +72,7 @@ my-nginx   2/2     2            2           9m10s   my-nginx     nginx    run=my
 
 ```
 
-#### check pod status in this deployment
+check pod status in this deployment
 ```console
 vagrant@master:~$ kubectl get pods -l run=my-nginx -o wide
 NAME                        READY   STATUS    RESTARTS   AGE     IP           NODE      NOMINATED NODE   READINESS GATES
@@ -80,7 +80,7 @@ my-nginx-64fc468bd4-9w69x   1/1     Running   0          9m57s   10.244.1.4   wo
 my-nginx-64fc468bd4-fr4wp   1/1     Running   0          9m57s   10.244.2.2   worker2   <none>           <none>
 ```
 
-#### check more deployment details
+check more deployment details
 ```console
 vagrant@master:~$ kubectl describe deployment my-nginx
 Name:                   my-nginx
@@ -126,21 +126,21 @@ ref: https://kubernetes.io/docs/concepts/services-networking/connect-application
 
 There are multiple ways to do it. The easiest way is to use NodePort. Here is an article about different ways to get external traffic into your cluster [ref](https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0)
 
-#### create a service
+create a service
 ```console
 vagrant@master:~$ wget https://raw.githubusercontent.com/kumokay/my_learning/master/01_kubernetes/playground/files/nginx-app/nginx-svc.yaml
 vagrant@master:~$ kubectl create -f nginx-svc.yaml
 service/my-nginx created
 ```
 
-#### check service status
+check service status
 ```console
 vagrant@master:~$  kubectl get svc my-nginx -o wide
 NAME       TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE     SELECTOR
 my-nginx   NodePort   10.100.213.194   <none>        8080:31839/TCP   4m56s   run=my-nginx
 ```
 
-#### check service details
+check service details
 ```console
 vagrant@master:~$ kubectl describe service my-nginx
 Name:                     my-nginx
@@ -159,9 +159,9 @@ External Traffic Policy:  Cluster
 Events:                   <none>
 ```
 
-#### use the Endpoints' public IP and NodePort to access the service
+### use the Endpoints' public IP and NodePort to access the service
 
-#### check pod status in this deployment
+check pod status in this deployment
 
 10.244.1.4:80,10.244.2.2:80 corresponds to worker1 and worker2 respectively.
 ```console
@@ -187,7 +187,7 @@ deployment.extensions "my-nginx" deleted
 service "my-nginx" deleted
 ```
 
-### create deployment and service in one step
+## create deployment and service in one step
 
 Option 1: write everything in one file
 ```console
