@@ -1,0 +1,12 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# configuration pararmeters
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/xenial64"
+  # copy sample code
+  config.vm.provision :file, source: "sample_code", destination: "~/sample_code"
+  # install thrift and language support
+  config.vm.provision :shell, path: "bootstrap.sh"
+end
