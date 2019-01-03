@@ -14,9 +14,15 @@ Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vag
 In Vagrantfile, use [ubuntu16_thrift](https://app.vagrantup.com/kumokay/boxes/ubuntu16_thrift) as the basebox.
 This box is generated using the script in [thrift_box](thrift_box).
 
-This setup will create a VM with thrift installed.
+This setup will create a VM with thrift installed. The VM can run python and cpp.
+
+To enable more programming lanugages, follow the instructions in [thrift/lib/<language>](https://github.com/apache/thrift/tree/master/lib)
 
 ## Run sample code
+
+The [sample code](thrift_box/sample_code) are taken from the [official repo](https://github.com/apache/thrift/tree/master/tutorial/).
+
+I modified a few lines to remove their dependencies to [thrift/lib](https://github.com/apache/thrift/tree/master/lib)
 
 ### start the box
 ```console
