@@ -3,20 +3,48 @@
 
 ## Concepts
 
-see https://thrift.apache.org/
+see https://thrift-tutorial.readthedocs.io/en/latest/thrift-stack.html
 
 Note: tried Apache Thrift v0.11.0 but cannot build the cpp example, so use v0.10.0 instead
+
+### other versions
+
+facebook has their own thrift framework: [fbthrift](https://code.fb.com/open-source/under-the-hood-building-and-open-sourcing-fbthrift/).
+- To improve asynchronous workload performance, they updated the base Thrift transport to be folly’s IOBuf class, a chained memory buffer, to handle out of order responses.
+- To allow for per-request attributes and features, they introduced a new THeader protocol and transport to indicate how to process the request
+
+## How files are generated
+
+Take `tutorial.thrift` for example:
+```cpp
+// everything defined below will belong to  namespace / module "tutorial"
+namespace cpp tutorial
+
+// constants will be in tutorial_constants / tutorial.constants
+const i32 INT32CONSTANT = 9853
+const map<string,string> MAPCONSTANT = {'hello':'world', 'goodnight':'moon'}
+
+// variables, enums, struct, exception will be in tutorial_types/tutorial.ttypes
+typedef i32 MyInteger
+enum Operation {...} // => c++ struct with enum inside or a python class
+struct Work {...} // => a class
+exception InvalidOperation {...} // => a class that inherited exception
+
+// each object will have one abstraction (interface)
+// and one object definition (class extends the interface),
+service Calculator extends shared.SharedService {...}
+```
 
 ## Environment setup
 
 Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.
 
-In Vagrantfile, use [ubuntu16_thrift](https://app.vagrantup.com/kumokay/boxes/ubuntu16_thrift) as the basebox.
+In Vagrantfile, use [ubuntu16_thrift](https://app.vagrantup.com/kumokay/boxes/ubuntu16_thrift) as the base box.
 This box is generated using the script in [thrift_box](thrift_box).
 
 This setup will create a VM with thrift installed. The VM can run python and cpp.
 
-To enable more programming lanugages, follow the instructions in [thrift/lib/<language>](https://github.com/apache/thrift/tree/master/lib)
+To enable more programming languages, follow the instructions in [thrift/lib/<language>](https://github.com/apache/thrift/tree/master/lib)
 
 ## Run sample code
 
@@ -35,9 +63,8 @@ $ vagrant ssh
 
 code-gen and compile cpp
 ```console
+vagrant@ubuntu-xenial:~$ cd sample_code/cpp
 vagrant@ubuntu-xenial:~/sample_code/cpp$ thrift -r --gen cpp ../tutorial.thrift
-vagrant@ubuntu-xenial:~/sample_code/cpp$ ls
-CMakeLists.txt  CppClient.cpp  CppServer.cpp  gen-cpp
 vagrant@ubuntu-xenial:~/sample_code/cpp$ cmake .
 -- The C compiler identification is GNU 5.4.0
 -- The CXX compiler identification is GNU 5.4.0
@@ -57,8 +84,6 @@ vagrant@ubuntu-xenial:~/sample_code/cpp$ cmake .
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/vagrant/sample_code/cpp
-vagrant@ubuntu-xenial:~/sample_code/cpp$ ls
-CMakeCache.txt  CMakeFiles  cmake_install.cmake  CMakeLists.txt  CppClient.cpp  CppServer.cpp  gen-cpp  Makefile
 vagrant@ubuntu-xenial:~/sample_code/cpp$ make
 Scanning dependencies of target tutorialgencpp
 [  8%] Building CXX object CMakeFiles/tutorialgencpp.dir/gen-cpp/Calculator.cpp.o
@@ -77,16 +102,11 @@ Scanning dependencies of target TutorialClient
 [ 91%] Building CXX object CMakeFiles/TutorialClient.dir/CppClient.cpp.o
 [100%] Linking CXX executable TutorialClient
 [100%] Built target TutorialClient
-vagrant@ubuntu-xenial:~/sample_code/cpp$ ls
-CMakeCache.txt  cmake_install.cmake  CppClient.cpp  gen-cpp              Makefile        TutorialServer
-CMakeFiles      CMakeLists.txt       CppServer.cpp  libtutorialgencpp.a  TutorialClient
 ```
 
 code-gen for python
 ```console
 vagrant@ubuntu-xenial:~/sample_code/py$ thrift -r --gen py ../tutorial.thrift
-vagrant@ubuntu-xenial:~/sample_code/py$ ls
-gen-py  PythonClient.py  PythonServer.py
 ```
 
 ### run sample case

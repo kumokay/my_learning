@@ -20,7 +20,7 @@ thrift -version
 cd lib/py
 sudo python setup.py install
 sudo apt-get -y install python-pip cmake
-pip install six
+pip --disable-pip-version-check install six
 
 # clean up
 sudo apt-get clean
