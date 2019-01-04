@@ -1,4 +1,4 @@
-# Getting Started with Apache Thrift
+# Getting Started with React
 
 using nodejs v11.x, react v16.7.0
 
@@ -6,7 +6,7 @@ using nodejs v11.x, react v16.7.0
 
 see https://reactjs.org/docs/hello-world.html
 
-for javascript, see [A_re-introduction_to_JavaScript] (https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
+for javascript, see [A_re-introduction_to_JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
 
 ## Environment setup
 
@@ -44,8 +44,9 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 ```
 
-since we did port forwarding to guest port 3000 to host port 3333 in the [Vagrantfile](playground/Vagrantfile),
-open a web browser and you will see the tic-tac-toe at http://127.0.0.1:3333/
+Since we did port forwarding in the [Vagrantfile](playground/Vagrantfile),
+we can access VM's port 3000 from host port 3333.
+Open a web browser and you will see the tic-tac-toe at http://127.0.0.1:3333/
 ```console
 $ curl http://127.0.0.1:3333
 <!DOCTYPE html>
