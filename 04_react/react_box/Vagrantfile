@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# configuration pararmeters
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/xenial64"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.network "forwarded_port", guest: 3000, host: 3333
+  #copy sample code
+  config.vm.provision "copy", type: "file",
+    source: "sample_code", destination: "~/sample_code"
+  # install nodejs
+  config.vm.provision "install_nodejs", type: "shell",
+    inline: <<-SHELL
+      sudo apt-get update
+      curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
+      sudo apt-get install -y nodejs
+    SHELL
+  # install react and create a new project
+  config.vm.provision "install_react", type: "shell",
+    inline: <<-SHELL
+      npx create-react-app react_tictactoe
+      rm -rf react_tictactoe/src
+      mv sample_code react_tictactoe/src
+    SHELL
+end

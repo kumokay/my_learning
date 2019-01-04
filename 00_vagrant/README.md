@@ -77,7 +77,8 @@ go to https://app.vagrantup.com/ and create an account, upload your box
 ### use the box
 ```console
 $ mkdir test && cd test
-$ vagrant init "kumokay/ubuntu16_kubeadm" && vagrant up
+$ vagrant init --minimal "kumokay/ubuntu16_kubeadm"
+$ vagrant up
 $ vagrant vagrant ssh
 $ vagrant destroy
 ```
