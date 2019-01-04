@@ -8,6 +8,10 @@ see https://reactjs.org/docs/hello-world.html
 
 for javascript, see [A_re-introduction_to_JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/A_re-introduction_to_JavaScript)
 
+for npm: [an-absolute-beginners-guide-to-using-npm](https://nodesource.com/blog/an-absolute-beginners-guide-to-using-npm/)
+
+for npx: https://www.npmjs.com/package/npx
+
 ## Environment setup
 
 Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.
