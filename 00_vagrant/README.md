@@ -1,5 +1,7 @@
 # How to use Vagrant
 
+using vagrant 2.2.2
+
 ## Envornment setup
 
 ### install Vagrant from package (apt-get install will give you older versions)
@@ -13,7 +15,7 @@ vagrant 2.2.2
 To uninstall: `sudo dpkg -r vagrant`
 
 ### install VirtualBox
-```
+```console
 $ wget https://download.virtualbox.org/virtualbox/6.0.0/virtualbox-6.0_6.0.0-127566~Ubuntu~xenial_amd64.deb
 $ sudo dpkg -i virtualbox-6.0_6.0.0-127566~Ubuntu~xenial_amd64.deb
 ```
@@ -21,7 +23,7 @@ $ sudo dpkg -i virtualbox-6.0_6.0.0-127566~Ubuntu~xenial_amd64.deb
 ## Getting start
 
 ### create a new ubuntu vagrant box
-```
+```py
 # init the project (if no Vagrantfile)
 # pick a box from https://app.vagrantup.com/boxes/search
 vagrant init ubuntu/trusty64
@@ -73,7 +75,7 @@ vagrant box add --name kumokay/ubuntu16_kubeadm ubuntu16_kubeadm.box
 go to https://app.vagrantup.com/ and create an account, upload your box
 
 ### use the box
-```
+```console
 $ mkdir test && cd test
 $ vagrant init "kumokay/ubuntu16_kubeadm" && vagrant up
 $ vagrant vagrant ssh

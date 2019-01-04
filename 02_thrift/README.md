@@ -1,11 +1,11 @@
 # Getting Started with Apache Thrift
 
+using Apache Thrift v0.10.0.
+(Note: tried Apache Thrift v0.11.0 but cannot build the cpp example, so use v0.10.0 instead)
 
 ## Concepts
 
 see https://thrift-tutorial.readthedocs.io/en/latest/thrift-stack.html
-
-Note: tried Apache Thrift v0.11.0 but cannot build the cpp example, so use v0.10.0 instead
 
 ### other versions
 

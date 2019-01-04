@@ -1,5 +1,7 @@
 # How to use kubernetes
 
+using kubernetes v1.13.1
+
 ## Concepts
 
 This article explains different pieces that make up the Kubernetes: [ref](https://medium.com/google-cloud/kubernetes-101-pods-nodes-containers-and-clusters-c1509e409e16).

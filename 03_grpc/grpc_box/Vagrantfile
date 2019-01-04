@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# configuration pararmeters
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/xenial64"
+  # copy sample code
+  config.vm.provision "copy", type: "file",
+    source: "sample_code", destination: "~/sample_code"
+  # install grpc python
+  config.vm.provision "install_grpc_py", type: "shell",
+    inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get -y install python-pip
+      sudo pip --disable-pip-version-check install grpcio grpcio-tools
+    SHELL
+  # install grpc cpp
+  config.vm.provision "install_grpc_cpp", type: "shell",
+    inline: <<-SHELL
+      sudo apt-get -y install build-essential autoconf libtool pkg-config
+      git clone -b v1.17.1 https://github.com/grpc/grpc
+      cd grpc
+      git submodule update --init
+      make
+      sudo make install
+      cd third_party/protobuf
+      sudo make install
+      cd ../../..
+      rm -rf grpc
+      sudo apt-get clean
+    SHELL
+end

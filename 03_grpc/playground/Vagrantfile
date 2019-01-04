@@ -1,0 +1,8 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# configuration pararmeters
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "kumokay/ubuntu16_grpc"
+end
