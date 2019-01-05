@@ -30,7 +30,7 @@ The [graphql_helloworld](playground/graphql_helloworld) example is taken from [h
 The [graphql_starwars](playground/graphql_starwars) is a much simpler version of the [starwars graphql wrapper](https://graphql.org/swapi-graphql/) that used by the [official tutorial](https://graphql.github.io/learn/). The corresponding source code is here (https://github.com/graphql/swapi-graphql).
 
 
-We leveraged files (starWarsSchema.js and starWarsData.js) in [graphql-js github](https://github.com/graphql/graphql-js/tree/master/src/__tests__) and implement the mutation function `createReview`. It provides an alternative way to walk through the [official tutorial](https://graphql.github.io/learn/).
+We leveraged files (starWarsSchema.js and starWarsData.js) in [graphql-js github](https://github.com/graphql/graphql-js/tree/master/src/__tests__), made some modification, and implemented the mutation function `createReview`. It provides an alternative way to walk through the [official tutorial](https://graphql.github.io/learn/).
 
 
 ### start the box
@@ -65,7 +65,7 @@ Running a GraphQL API server at localhost:4000/graphql
 
 Since we did port forwarding in the [Vagrantfile](playground/Vagrantfile),
 we can access VM's port 4000 from host port 4444.
-Open a web browser and you will see the GraphiQL UI at http://127.0.0.1:4444/
+Open a web browser and you will see the GraphiQL UI at http://127.0.0.1:4444/graphql
 
 Sample queries and mutations:
 ```
@@ -135,7 +135,7 @@ Running a GraphQL API server at localhost:4000/graphql
 
 Since we did port forwarding in the [Vagrantfile](playground/Vagrantfile),
 we can access VM's port 4000 from host port 4444.
-Open a web browser and you will see the GraphiQL UI at http://127.0.0.1:4444/
+Open a web browser and you will see the GraphiQL UI at http://127.0.0.1:4444/graphql
 
 sample queries and mutations
 ```
