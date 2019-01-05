@@ -16,7 +16,7 @@ for npx: https://www.npmjs.com/package/npx
 
 Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.
 
-In Vagrantfile, use [ubuntu16_react](https://app.vagrantup.com/kumokay/boxes/ubuntu16_react) as the base box. This box is generated using the script in [react_box](grpc_box).
+In Vagrantfile, use [ubuntu16_react](https://app.vagrantup.com/kumokay/boxes/ubuntu16_react) as the base box. This box is generated using the script in [react_box](react_box).
 
 This setup will create a VM with nodejs v11.x and react v16.7.0 installed.
 
