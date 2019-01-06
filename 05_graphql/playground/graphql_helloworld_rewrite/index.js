@@ -5,11 +5,11 @@ import { mySchema } from './schema';
 
 
 const app = express()
-app.get('/graphql', graphqlHTTP({
+app.use('/graphql', graphqlHTTP({
   schema: mySchema,
   graphiql: true,
 }));
-app.get('/schema', function(req, res, _next) {
+app.use('/schema', function(req, res, _next) {
     res.set('Content-Type', 'text/plain');
     res.send(printSchema(mySchema));
 });
