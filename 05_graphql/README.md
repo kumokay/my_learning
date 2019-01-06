@@ -14,6 +14,8 @@ for npm: [an-absolute-beginners-guide-to-using-npm](https://nodesource.com/blog/
 
 for npx: https://www.npmjs.com/package/npx
 
+to enable es6 imports in node js: [how-to-enable-es6-imports-in-nodejs](https://timonweb.com/posts/how-to-enable-es6-imports-in-nodejs/)
+
 ## Environment setup
 
 Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.
@@ -25,6 +27,11 @@ In addition to nodejs v11.x and react v16.7.0 which are already installed in the
 ## Run sample code
 
 The [graphql_helloworld](playground/graphql_helloworld) example is taken from [here](https://graphql.github.io/graphql-js/mutations-and-input-types/). It is one of the many in [graphql.js tutorial](https://graphql.github.io/graphql-js/).
+
+
+The [graphql_helloworld_rewrite](playground/graphql_helloworld_rewrite) example
+modified [graphql_helloworld](playground/graphql_helloworld) to javascript [es6](https://en.wikipedia.org/wiki/ECMAScript#6th_Edition_-_ECMAScript_2015).
+In this example we also construct graphql object types by ourself; see [constructing-types](https://graphql.org/graphql-js/constructing-types/) for more details.
 
 
 The [graphql_starwars](playground/graphql_starwars) is a much simpler version of the [starwars graphql wrapper](https://graphql.org/swapi-graphql/) that used by the [official tutorial](https://graphql.github.io/learn/). The corresponding source code is here (https://github.com/graphql/swapi-graphql).
@@ -102,6 +109,10 @@ mutation {
 }
 
 ```
+
+### run graphql_helloworld_rewrite
+
+same as [run graphql_helloword](#run-graphql_helloworld).
 
 ### run graphql_starwars
 

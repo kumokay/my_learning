@@ -5,6 +5,8 @@ Vagrant.configure("2") do |config|
   #copy sample code
   config.vm.provision "copy graphql_helloworld", type: "file",
     source: "graphql_helloworld", destination: "~/graphql_helloworld"
+  config.vm.provision "copy graphql_helloworld_rewrite", type: "file",
+    source: "graphql_helloworld_rewrite", destination: "~/graphql_helloworld_rewrite"
   config.vm.provision "copy graphql_starwars", type: "file",
     source: "graphql_starwars", destination: "~/graphql_starwars"
 end
