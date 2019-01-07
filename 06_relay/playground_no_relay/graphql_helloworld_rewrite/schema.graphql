@@ -1,0 +1,36 @@
+"""
+This file defines graphql schema
+"""
+
+
+""" Define Input types """
+
+input MessageInput {
+  content: String
+  author: String
+}
+
+
+""" Define Object types """
+
+type Message {
+  id: ID!
+  content: String
+  author: String
+}
+
+
+""" Define Query """
+
+type Query {
+  getMessage(id: ID!): Message
+  listMessageIDs: [ID]
+}
+
+
+""" Define Mutation """
+
+type Mutation {
+  createMessage(input: MessageInput): Message
+  updateMessage(id: ID!, input: MessageInput): Message
+}

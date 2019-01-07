@@ -12,6 +12,8 @@ for npm: [an-absolute-beginners-guide-to-using-npm](https://nodesource.com/blog/
 
 for npx: https://www.npmjs.com/package/npx
 
+to show debug console in chrome, do `ctrl + shift + j`
+
 ## Environment setup
 
 Use vagrant to create multiple VMs as the playground. See [00_vagrant](../00_vagrant) for how to use vagrant.

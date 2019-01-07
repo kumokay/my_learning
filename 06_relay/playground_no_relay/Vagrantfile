@@ -1,0 +1,22 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "kumokay/ubuntu16_react"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+  config.vm.network "forwarded_port", guest: 4000, host: 4000
+  config.vm.provision "copy graphql_helloworld_rewrite", type: "file",
+    source: "graphql_helloworld_rewrite", destination: "~/graphql_helloworld_rewrite"
+  config.vm.provision "copy react_app", type: "file",
+    source: "react_app", destination: "~/react_app"
+  config.vm.provision "run graphql server", type: "shell",
+    inline: <<-SHELL
+      cd graphql_helloworld_rewrite
+      npm install
+      npm start &
+    SHELL
+  config.vm.provision "run react_app", type: "shell",
+    inline: <<-SHELL
+      cd react_app
+      npm install
+      npm start &
+    SHELL
+end

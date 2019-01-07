@@ -95,7 +95,6 @@ mutation {
   }) {
     id
   }
-
 }
 
 mutation {
