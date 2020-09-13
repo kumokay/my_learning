@@ -185,3 +185,64 @@ int main()
     }
 }
 ```
+## Smart pointers
+- share_ptr: https://en.cppreference.com/w/cpp/memory/shared_ptr
+- unique_ptr: https://en.cppreference.com/w/cpp/memory/unique_ptr
+```cpp
+#include <iostream>
+#include <string>
+#include <memory>
+
+struct Data {
+  ~Data() {
+    std::cout << "destroy data:" << value << std::endl;
+  }
+  Data(std::string s) : value(std::move(s)) {
+    std::cout << "create data:" << value << std::endl;
+  }
+  Data(const Data& src) : value(src.value) { 
+    std::cout << "copy data:" << value << std::endl;
+  }
+  Data(Data&& src) : value(std::move(src.value)) {
+    std::cout << "move data:" << value << std::endl;
+  }
+  
+  friend std::ostream& operator<<(std::ostream& os, const Data& data) {
+    os << data.value;
+    return os;
+  }
+
+  std::string value;
+};
+
+
+int main()
+{
+  std::cout << "======setup" << std::endl;
+  auto pu = std::make_unique<Data>("unique");
+  auto ps = std::make_shared<Data>("shared");
+  {
+    std::cout << "======1" << std::endl;
+    auto& prl = pu;
+    std::cout << *prl << std::endl;
+    // cannot copy unique ptr
+    // auto pv = pu;
+    auto&& prr = pu;
+    std::cout << *prr << std::endl;
+    auto pv = std::move(pu);
+    std::cout << *pv << std::endl;
+  }
+  {
+    std::cout << "======2" << std::endl;
+    auto& prl = ps;
+    std::cout << *prl << std::endl;
+    auto&& prr = ps;
+    std::cout << *prr << std::endl;
+    auto pv1 = ps;
+    std::cout << *pv1 << std::endl;
+    auto pv2 = pv1;
+    std::cout << *pv2 << std::endl;
+  }
+  std::cout << "======teardown" << std::endl;
+}
+```
