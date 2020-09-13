@@ -1,5 +1,55 @@
 # Just some cpp notes
 
+## Structured binding declaration
+- https://en.cppreference.com/w/cpp/language/structured_binding
+```cpp
+// https://coliru.stacked-crooked.com/a/3eb42da341156f95
+#include <iostream>
+#include <string>
+#include <vector>
+
+struct Data {
+  Data(std::string s) : value(std::move(s)) {}
+  Data(const Data& src) : value(src.value) { 
+    std::cout << "copy data:" << value << std::endl;
+  }
+  Data(Data&& src) : value(std::move(src.value)) { 
+    std::cout << "move data:" << value << std::endl;
+  }
+  
+  friend std::ostream& operator<<(std::ostream& os, const Data& data) {
+    os << data.value;
+    return os;
+  }
+
+  std::string value;
+};
+
+int main()
+{
+  std::pair<Data, Data> p{Data("111"), Data("222")};
+  {
+    std::cout << "======" << std::endl;
+    auto& [x,y] = p;
+    std::cout << x << "," << y << std::endl;
+    std::cout << "p=" << p.first << "," << p.second << std::endl;
+  }
+  {
+    std::cout << "======" << std::endl;
+    auto&& [x,y] = std::move(p);
+    std::cout << x << "," << y << std::endl;
+    std::cout << "p=" << p.first << "," << p.second << std::endl;
+  }
+  {
+    std::cout << "======" << std::endl;
+    auto [x,y] = std::move(p);
+    std::cout << x << "," << y << std::endl;
+    std::cout << "p=" << p.first << "," << p.second << std::endl;
+  }
+}
+```
+
+
 ## unordered_set
 ### emplace vs try_emplace
 - emplace
