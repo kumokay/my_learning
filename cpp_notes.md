@@ -1,4 +1,148 @@
-# Just some cpp notes
+# CPP Designs
+
+## Traits and policies
+- A trait is a class or class template that characterizes a type, possibly a template parameter.
+- A policy is a class or class template that defines an interface as a service to other classes.
+```cpp
+// https://coliru.stacked-crooked.com/a/a513d853bd5a1d02
+#include <iostream>
+#include <string>
+
+struct MageTrait {
+  static constexpr int kMaxHp = 50;
+  static constexpr int kDefense = 5;
+  static constexpr int kDamage = 35;
+};
+
+struct PriestTrait {
+  static constexpr int kMaxHp = 70;
+  static constexpr int kDefense = 7;
+  static constexpr int kDamage = 10;
+};
+
+struct PaladinTrait {
+  static constexpr int kMaxHp = 100;
+  static constexpr int kDefense = 10;
+  static constexpr int kDamage = 20;
+};
+
+struct AttackPolicy {
+  template <typename T, typename U>
+  static void action(T& attacker, U& victim, int points) {
+    victim.takeDamage(points);
+  }
+};
+
+struct HealPolicy {
+  template <typename T, typename U>
+  static void action(T& healer, U& player, int points) {
+    player.restoreHp(points);
+  }
+};
+
+struct AttackAndSelfHealPolicy {
+  template <typename T, typename U>
+  static void action(T& attacker, U& victim, int points) {
+    int damage = victim.takeDamage(points);
+    attacker.restoreHp(damage * 0.5);
+  }
+};
+
+template<typename TTraits, typename TPolicy>
+class Player {
+ public:
+  explicit Player(std::string name)
+  : name_(std::move(name)), 
+    hp_(TTraits::kMaxHp) {}
+  
+  bool isAlive() const {
+    if (hp_ > 0) {
+      std::cout << name_ << " has " << hp_ << " hp!" << std::endl;
+      return true;
+    }
+    std::cout << name_ << " is dead!" << std::endl;
+    return false;
+  }
+  
+  int takeDamage(int points) {
+    auto diff = std::max(0, points - TTraits::kDefense);
+    hp_ -= diff;
+    std::cout << name_ << " took " << diff << " damage!" << std::endl;
+    return diff;
+  }
+  
+  void restoreHp(int points) {
+    auto diff = std::min(TTraits::kMaxHp - hp_, points);
+    std::cout << name_ << " restored " << diff << " hp!" << std::endl;
+    hp_ += diff;
+  }
+  
+  template <typename TPlayer>
+  void action(TPlayer& player) {
+    if (!isAlive() || !player.isAlive()) {
+      std::cerr << name_ << " cannot do anything to " << player.name() << std::endl;
+      return;
+    }
+    TPolicy::action(*this, player, TTraits::kDamage);
+  }
+  
+  const std::string& name() {
+    return name_;
+  }
+
+ private:
+  std::string name_;
+  int hp_;
+  int mp_;
+};
+
+class Mage : public Player<MageTrait, AttackPolicy> {
+  using Player::Player;
+};
+class Paladin : public Player<MageTrait, AttackAndSelfHealPolicy> {
+  using Player::Player;
+};
+class Priest : public Player<PriestTrait, HealPolicy> {
+  using Player::Player;
+};
+
+int main()
+{
+  std::cout << "======setup" << std::endl;
+  Mage mage("mage");
+  Paladin paladin("paladin");
+  Priest priest("priest");
+  {
+    std::cout << "======1" << std::endl;
+    mage.action(paladin);
+  }
+  {
+    std::cout << "======2" << std::endl;
+    paladin.action(mage);
+  }
+  {
+    std::cout << "======3" << std::endl;
+    priest.action(mage);
+  }
+  {
+    std::cout << "======4" << std::endl;
+    mage.action(paladin);
+  }
+  {
+    std::cout << "======5" << std::endl;
+    paladin.action(mage);
+  }
+  {
+    std::cout << "======6" << std::endl;
+    priest.action(mage);
+  }
+  std::cout << "======teardown" << std::endl;
+}
+
+
+```
+
+# CPP Features
 
 ## Reference declaration
 - https://en.cppreference.com/w/cpp/language/reference
