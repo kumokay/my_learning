@@ -4,24 +4,34 @@
 - A trait is a class or class template that characterizes a type, possibly a template parameter.
 - A policy is a class or class template that defines an interface as a service to other classes.
 ```cpp
-// https://coliru.stacked-crooked.com/a/a513d853bd5a1d02
+// https://coliru.stacked-crooked.com/a/206cf001971ed6ed
 #include <iostream>
 #include <string>
 
-struct MageTrait {
+class Mage;
+class Priest;
+class Paladin;
+
+template <typename TClass>
+struct ClassTraits;
+
+template <>
+struct ClassTraits<Mage> {
   static constexpr int kMaxHp = 50;
   static constexpr int kDefense = 5;
-  static constexpr int kDamage = 35;
+  static constexpr int kDamage = 40;
 };
 
-struct PriestTrait {
+template <>
+struct ClassTraits<Priest> {
   static constexpr int kMaxHp = 70;
-  static constexpr int kDefense = 7;
+  static constexpr int kDefense = 0;
   static constexpr int kDamage = 10;
 };
 
-struct PaladinTrait {
-  static constexpr int kMaxHp = 100;
+template <>
+struct ClassTraits<Paladin> {
+  static constexpr int kMaxHp = 80;
   static constexpr int kDefense = 10;
   static constexpr int kDamage = 20;
 };
@@ -44,7 +54,7 @@ struct AttackAndSelfHealPolicy {
   template <typename T, typename U>
   static void action(T& attacker, U& victim, int points) {
     int damage = victim.takeDamage(points);
-    attacker.restoreHp(damage * 0.5);
+    attacker.restoreHp(damage * 0.3);
   }
 };
 
@@ -68,6 +78,7 @@ class Player {
     auto diff = std::max(0, points - TTraits::kDefense);
     hp_ -= diff;
     std::cout << name_ << " took " << diff << " damage!" << std::endl;
+    isAlive();
     return diff;
   }
   
@@ -96,13 +107,13 @@ class Player {
   int mp_;
 };
 
-class Mage : public Player<MageTrait, AttackPolicy> {
+class Mage : public Player<ClassTraits<Mage>, AttackPolicy> {
   using Player::Player;
 };
-class Paladin : public Player<MageTrait, AttackAndSelfHealPolicy> {
+class Paladin : public Player<ClassTraits<Paladin>, AttackAndSelfHealPolicy> {
   using Player::Player;
 };
-class Priest : public Player<PriestTrait, HealPolicy> {
+class Priest : public Player<ClassTraits<Priest>, HealPolicy> {
   using Player::Player;
 };
 
@@ -136,10 +147,12 @@ int main()
     std::cout << "======6" << std::endl;
     priest.action(mage);
   }
+  {
+    std::cout << "======7" << std::endl;
+    mage.action(paladin);
+  }
   std::cout << "======teardown" << std::endl;
 }
-
-
 ```
 
 # CPP Features
