@@ -10,14 +10,18 @@ Reference:
 -module(main).
 -export([start/0]).
 
--define(PROD1, 1).
--define(PROD2, 2).
+-define(PROD1, "1").
+-define(PROD2, "2").
 
 choose_module(?PROD1) -> array;
 choose_module(?PROD2) -> binary.
 
-start() ->
-  Mod = choose_module(?PROD2),
-  ModName = Mod:module_info(module),
-  io:fwrite(["ModName: ", io_lib:print(ModName), "\n"]).
+execute(Type) ->
+  Mod = choose_module(Type),
+  ModName = io_lib:print(Mod:module_info(module)),
+  io:fwrite(["Product", Type, " uses ", ModName, "\n"]).
+
+start() -> 
+  execute(?PROD1),
+  execute(?PROD2).
 ```
