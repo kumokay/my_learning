@@ -45,3 +45,88 @@ Data={dict,1,16,16,8,80,48,
       {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
       {{[],[],[],[],[],[["123",52,53,54]],[],[],[],[],[],[],[],[],[],[]}}}
 ```
+
+# Practice
+```
+-module(main).
+-export([start/0]).
+
+same(A, A) ->
+  true;
+same(A, [Head | Tail]) ->
+  IsHeadSame = same(A, Head),
+  if Tail =/= [] -> same(A, Tail) and IsHeadSame
+   ; true -> IsHeadSame
+  end;
+same(_, _) ->
+  false.
+
+same([Head | Tail]) ->
+  same(Head, Tail);
+same(X) ->
+  if is_tuple(X) -> same(tuple_to_list(X))
+   ; true -> throw(error("cannot handle this type."))
+  end.
+
+execute() ->
+  Pairs = [{"a", [97]}, {8#17, 16#F}, {<<"a">>, 97}],
+  [
+    [same(A, B) || {A, B} <- Pairs],
+    same([8#17, 16#F, 15]),
+    same({8#17, 16#F, 15}),
+    same([<<"a">>, 97, "a"]),
+    same([<<"a">>, <<97>>]),
+    same([<<"ab">>, <<97, 98>>, <<"a", "b">>]),
+    same(["ab", [97, 98]])
+    %% same(1234) %% cannot handle type
+  ].
+
+%% main
+start() ->
+  Fn = fun(I, X) -> io:fwrite(io_lib:format("~p: ~p\n", [I, X])) end,
+  Result = execute(),
+  Indices = lists:seq(1, length(Result)),
+  [Fn(I, X) || {I, X} <- lists:zip(Indices, Result)].
+```
+Output
+```
+-module(main).
+-export([start/0]).
+
+same(A, A) ->
+  true;
+same(A, [Head | Tail]) ->
+  IsHeadSame = same(A, Head),
+  if Tail =/= [] -> same(A, Tail) and IsHeadSame
+   ; true -> IsHeadSame
+  end;
+same(_, _) ->
+  false.
+
+same([Head | Tail]) ->
+  same(Head, Tail);
+same(X) ->
+  if is_tuple(X) -> same(tuple_to_list(X))
+   ; true -> throw(error("cannot handle this type."))
+  end.
+
+execute() ->
+  Pairs = [{"a", [97]}, {8#17, 16#F}, {<<"a">>, 97}],
+  [
+    [same(A, B) || {A, B} <- Pairs],
+    same([8#17, 16#F, 15]),
+    same({8#17, 16#F, 15}),
+    same([<<"a">>, 97, "a"]),
+    same([<<"a">>, <<97>>]),
+    same([<<"ab">>, <<97, 98>>, <<"a", "b">>]),
+    same(["ab", [97, 98]])
+    %% same(1234) %% cannot handle type
+  ].
+
+%% main
+start() ->
+  Fn = fun(I, X) -> io:fwrite(io_lib:format("~p: ~p\n", [I, X])) end,
+  Result = execute(),
+  Indices = lists:seq(1, length(Result)),
+  [Fn(I, X) || {I, X} <- lists:zip(Indices, Result)].
+```
