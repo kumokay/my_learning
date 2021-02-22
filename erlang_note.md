@@ -47,7 +47,8 @@ Data={dict,1,16,16,8,80,48,
 ```
 
 # Practice
-```
+## Functions
+```erlang
 -module(main).
 -export([start/0]).
 
@@ -129,4 +130,61 @@ start() ->
   Result = execute(),
   Indices = lists:seq(1, length(Result)),
   [Fn(I, X) || {I, X} <- lists:zip(Indices, Result)].
+```
+## Lists
+```erlang
+-module(main).
+-export([start/0]).
+
+combine(A, B) -> 
+  case {A rem 2, B rem 2} of
+    {0, 1} -> A;
+    {1, 0} -> B;
+    _ -> A + B
+  end.
+
+execute() ->
+  List = [1, 2, 3, 4, 5],
+  FnDouble = fun(X) -> 2*X end,
+  FnIsEven = fun(X) -> X rem 2 =:= 0 end,
+  FnDivideIfEven = fun(X) -> 
+      if 
+        X rem 2 =:= 0 -> {true, X div 2};
+        true -> false
+      end
+    end,
+  FnCombine = fun(A, B) -> combine(A, B) end,
+  FnSideEffect = fun(_) -> io:fwrite("side effect\n") end,
+  [
+    lists:map(FnDouble, List),
+    lists:filter(FnIsEven, List),
+    lists:filtermap(FnDivideIfEven, List),
+    lists:foldl(fun(X, Sum) -> X + Sum end, 0, List),
+    lists:foldr(fun(X, Sum) -> X + Sum end, 1, List),
+    lists:zipwith(FnCombine, [1, 2, 3, 4], [2, 3, 5, 6]),
+    lists:foreach(FnSideEffect, List)
+  ].
+  
+%% main
+start() ->
+  Fn = fun(I, X) -> io:fwrite(io_lib:format("~p: ~p\n", [I, X])) end,
+  Result = execute(),
+  Indices = lists:seq(1, length(Result)),
+  [Fn(I, X) || {I, X} <- lists:zip(Indices, Result)].
+```
+Output
+```
+> run-project
+side effect
+side effect
+side effect
+side effect
+side effect
+1: [2,4,6,8,10]
+2: [2,4]
+3: [1,2]
+4: 15
+5: 16
+6: [2,2,8,10]
+7: ok
 ```
