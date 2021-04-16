@@ -16,6 +16,14 @@ Reference:
 choose_module(?PROD1) -> array;
 choose_module(?PROD2) -> dict.
 
+set_enum_value(EnumName) ->
+  Value = case EnumName of
+    red -> "red";
+    blue -> "blue";
+    green -> "green"
+  end,
+  Value.
+
 execute(Type, Data) ->
   Mod = choose_module(Type),
   ModName = io_lib:print(Mod:module_info(module)),
@@ -28,7 +36,8 @@ execute(Type, Data) ->
 start() -> 
   Data = [{"123", "456"}],
   execute(?PROD1, array:from_list(Data)),
-  execute(?PROD2, dict:from_list(Data)).
+  execute(?PROD2, dict:from_list(Data)),
+  io:fwrite([set_enum_value(red), "\n"]).
 ```
 Output:
 ```
