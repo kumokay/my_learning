@@ -31,7 +31,16 @@ The value of shadowed immutable_x is: 6
 The value of mutable_x is: 6
 The value of mutable_x is: 518400
 ```
-### Data types
+### Primitive data types
+- Scalar types
+  - Integers: 
+    - i8, i16, i32, i64, i128, isize
+    - u8, u16, u32, u64, u128, usize
+  - Floats: f32 and f64
+  - Boolean: bool
+  - Characters: char
+- Compound types: tuples and arrays
+
 Example:
 ```rust
 fn main() {
@@ -117,4 +126,110 @@ fn main() {
 Output:
 ```
 The value of x is: 106
+```
+### Control Flow
+Example:
+```rust
+fn demo_if(number: u32) {
+    if number % 4 == 0 {
+        println!("{} is divisible by 4", number);
+    } else if number % 3 == 0 {
+        println!("{} is divisible by 3", number);
+    } else if number % 2 == 0 {
+        println!("{} is divisible by 2", number);
+    } else {
+        println!("{} is not divisible by 4, 3, or 2", number);
+    }
+}
+
+fn demo_while(number: u32) {
+    let array: [u32; 3] = [4, 3, 2];
+    let mut idx = 0;
+    while idx != array.len() {
+        if number % array[idx] == 0 {
+            println!("{} is divisible by {}", number, array[idx]);
+            break;
+        }
+        idx = idx + 1;
+    }
+    if idx == array.len() {
+        println!("{} is not divisible by 4, 3, or 2", number);
+    }
+}
+
+fn demo_loop(number: u32) {
+    let array: [u32; 3] = [4, 3, 2];
+    let mut idx = 0;
+    let is_divisible = loop {
+        if idx == array.len() {
+            break false;
+        } else if number % array[idx] == 0 {
+            break true;
+        } else {
+            idx = idx + 1;
+        }
+    };
+    if is_divisible { 
+        println!("{} is divisible by {}", number, array[idx]);
+    } else {
+        println!("{} is not divisible by 4, 3, or 2", number);
+    }
+}
+
+fn demo_for_range(number: u32) {
+    let array: [u32; 3] = [4, 3, 2];
+    let mut is_divisible: bool = false;
+    for idx in 0..array.len() {
+        if number % array[idx] == 0 {
+            println!("{} is divisible by {}", number, array[idx]);
+            is_divisible = true;
+            break;
+        }
+    }
+    if !is_divisible { 
+        println!("{} is not divisible by 4, 3, or 2", number);
+    }
+}
+
+fn demo_for_iter(number: u32) {
+    let array: [u32; 3] = [4, 3, 2];
+    let mut is_divisible: bool = false;
+    for x in array.iter() {
+        if number % x == 0 {
+            println!("{} is divisible by {}", number, x);
+            is_divisible = true;
+            break;
+        }
+    }
+    if !is_divisible { 
+        println!("{} is not divisible by 4, 3, or 2", number);
+    }
+}
+
+fn demo_match(number: u32) {
+    match (number % 4, number % 3, number % 2) {
+        (0, ..) => println!("{} is divisible by 4", number),
+        (_, 0, _) => println!("{} is divisible by 3", number),
+        (.., 0) => println!("{} is divisible by 2", number),
+        _ => println!("{} is not divisible by 4, 3, or 2", number),
+    }
+}
+
+fn main() {
+    demo_if(15);
+    demo_while(16);
+    demo_loop(17);
+    demo_for_range(18);
+    demo_for_iter(19);
+    demo_match(20);
+}
+```
+Output:
+```
+15 is divisible by 3
+16 is divisible by 4
+17 is not divisible by 4, 3, or 2
+18 is divisible by 3
+19 is not divisible by 4, 3, or 2
+20 is divisible by 4
 ```
