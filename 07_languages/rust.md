@@ -2,7 +2,8 @@
 - The Rust Programming Language: https://doc.rust-lang.org/book/title-page.html
 - Online playground: https://play.rust-lang.org/
 
-## Variables: const, immutable, mutable, shadow, type casting
+## Common Programming Concepts
+### Variables: const, immutable, mutable, shadow, type casting
 Example:
 ```rust
 fn main() {
@@ -30,7 +31,7 @@ The value of shadowed immutable_x is: 6
 The value of mutable_x is: 6
 The value of mutable_x is: 518400
 ```
-## Data types
+### Data types
 Example:
 ```rust
 fn main() {
@@ -90,4 +91,30 @@ Print everything: (
         5,
     ],
 )
+```
+### Functions
+Example:
+```rust
+fn add(lhs: i32, rhs: i32) -> i32 { 
+    lhs + rhs // without a semicolon at the end will return the value
+}
+
+fn print(name: &str, value: i32) { 
+    println!("The value of {} is: {}", name, value);
+    // with a semicolon at the end will return nothing
+}
+
+fn main() {
+    fn increment(x: i32) -> i32 { x + 1 }
+
+    let y = {
+      let x: i32 = 100;
+      add(increment(x), 5)
+    };
+    print("x", y);
+}
+```
+Output:
+```
+The value of x is: 106
 ```
