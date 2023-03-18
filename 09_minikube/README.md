@@ -3,25 +3,26 @@ Environment:
 - ubuntu 16.04
 - virtualbox 5.1.38
 - minikube v1.29.0
+Reference: 
+- https://minikube.sigs.k8s.io/docs/start/
 
 ## Installation
 
 ### Install VirtualBox
-
 ```
 $ sudo apt-get install virtualbox virtualbox-ext-pack
 ```
 Note: May need to turn off secure boot to make it work.
 
 ### Install Minikube
-
+https://minikube.sigs.k8s.io/docs/start/
 ```
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 ```
 
-### Install kubectl
-
+### Install kubectl (pronounce "kube-cuttle")
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 ```
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
