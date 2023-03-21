@@ -1,0 +1,29 @@
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: flask
+        tier: frontend
+  template:
+    metadata:
+      labels:
+        app: flask
+        tier: frontend
+    spec:
+      containers:
+      - name: helloworld
+        image: kumokay/flask-helloworld:latest
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
