@@ -84,8 +84,13 @@ $ minikube dashboard
 🤔  Verifying proxy health ...
 🎉  Opening http://127.0.0.1:35147/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
 
+## Deploying an application
+
+Modify the official example and use Flask + Redis instead of PHP + Redis:
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/
+
 ```
-## How to build docker images
+### How to build docker images
 Ref: https://devopscube.com/build-docker-image/
 
 ```
@@ -93,10 +98,6 @@ $ cd ~/github/my_learning/09_minikube/dockerfiles/helloworld
 $ docker build -t kumokay/flask-helloworld:latest .
 $ docker push kumokay/flask-helloworld:latest
 ```
-## Deploying an application
-
-Modify the official example and use Flask + Redis instead of PHP + Redis:
-https://kubernetes.io/docs/tutorials/stateless-application/guestbook/
 
 ### Start up a Redis leader.
 ```
