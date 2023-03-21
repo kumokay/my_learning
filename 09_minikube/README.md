@@ -85,7 +85,14 @@ $ minikube dashboard
 🎉  Opening http://127.0.0.1:35147/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
 
 ```
+## How to build docker images
+Ref: https://devopscube.com/build-docker-image/
 
+```
+$ cd ~/github/my_learning/09_minikube/dockerfiles/helloworld
+$ docker build -t kumokay/flask-helloworld:latest .
+$ docker push kumokay/flask-helloworld:latest
+```
 ## Deploying an application
 
 Modify the official example and use Flask + Redis instead of PHP + Redis:
@@ -171,6 +178,40 @@ $ curl -X POST -H "Content-Type: application/json" -d '{"key1": 12345}' http://1
 
 $ curl http://10.103.201.214:8080/get_from_redis
 [{"key1":"12345"}]
+```
+
+### Debug the deployment
+We can get inside a pod / container to check if there's something wrong.
+For example, debugging hello-minikube1 running the container image built from here: https://github.com/kumokay/my_learning/tree/master/09_minikube/dockerfiles/helloworld
+```
+$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+hello-minikube1-c799c86d-4vvzc    1/1     Running   0          4m4s
+
+$ kubectl exec -it hello-minikube1-c799c86d-4vvzc -- bash
+
+root@hello-minikube1-c799c86d-4vvzc:/# flask shell
+
+Python 3.8.10 (default, Nov 14 2022, 12:59:47) 
+[GCC 9.4.0] on linux
+App: hello [production]
+Instance: /instance
+>>> from hello import get_from_redis
+>>> get_from_redis()
+Traceback (most recent call last):
+  File "/hello.py", line 40, in get_from_redis
+    return jsonify([dict(zip(keys, vals))])
+  File "/usr/local/lib/python3.8/dist-packages/flask/json/__init__.py", line 302, in jsonify
+    f"{dumps(data, indent=indent, separators=separators)}\n",
+  File "/usr/local/lib/python3.8/dist-packages/flask/json/__init__.py", line 132, in dumps
+    return _json.dumps(obj, **kwargs)
+  File "/usr/lib/python3.8/json/__init__.py", line 234, in dumps
+    return cls(
+  File "/usr/lib/python3.8/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/usr/lib/python3.8/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+TypeError: keys must be str, int, float, bool or None, not bytes
 ```
 
 ### Scale the web frontend 
