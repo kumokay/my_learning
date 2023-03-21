@@ -68,7 +68,7 @@ kube-system   kube-scheduler-minikube            1/1     Running   0            
 kube-system   storage-provisioner                1/1     Running   1 (10m ago)   11m
 ```
 
-### Show dashboard
+### Show dashboard (in another window)
 ```
 $ minikube dashboard
 🔌  Enabling dashboard ...
@@ -85,5 +85,125 @@ $ minikube dashboard
 🎉  Opening http://127.0.0.1:35147/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/ in your default browser...
 
 ```
+
+## Deploying an application
+
+Modify the official example and use Flask + Redis instead of PHP + Redis:
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/
+
+### Start up a Redis leader.
+```
+$ cd ~/github/my_learning/09_minikube/application/helloworld
+$ kubectl apply -f redis-leader-deployment.yaml
+deployment.apps/redis-leader created
+$ kubectl apply -f redis-leader-service.yaml
+service/redis-leader created
+```
+### Start up two Redis followers.
+```
+$ kubectl apply -f redis-follower-deployment.yaml
+deployment.apps/redis-follower created
+$ kubectl apply -f redis-follower-service.yaml
+service/redis-follower created
+```
+### Start up the frontend.
+```
+$ kubectl apply -f frontend-deployment.yaml 
+deployment.apps/frontend created
+$ kubectl apply -f frontend-service.yaml 
+service/frontend created
+```
+### Query the list of Pods
+```
+$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+frontend-68bd8c8b85-h9s22         1/1     Running   0          22s
+frontend-68bd8c8b85-jpnfp         1/1     Running   0          22s
+frontend-68bd8c8b85-xqhbm         1/1     Running   0          22s
+redis-follower-74d9c98c76-nxphc   1/1     Running   0          43s
+redis-follower-74d9c98c76-ptmwq   1/1     Running   0          43s
+redis-leader-5596fc7b68-sl9vv     1/1     Running   0          90s
+```
+### Query the list of Services and start the tunnel 
+Frontend's external-IP is still pending.
+```
+$ kubectl get service
+NAME             TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+frontend         LoadBalancer   10.103.201.214   <pending>     8080:30044/TCP   30s
+kubernetes       ClusterIP      10.96.0.1        <none>        443/TCP          30h
+redis-follower   ClusterIP      10.102.254.141   <none>        6379/TCP         50s
+redis-leader     ClusterIP      10.108.156.152   <none>        6379/TCP         85s
+```
+In another window, start the tunnel to create a routable IP for the frontend deployment:
+```
+$ minikube tunnel
+Status:	
+	machine: minikube
+	pid: 21792
+	route: 10.96.0.0/12 -> 192.168.59.100
+	minikube: Running
+	services: [frontend]
+    errors: 
+		minikube: no errors
+		router: no errors
+		loadbalancer emulator: no errors
+```
+Now we have frontend's external-IP:
+```
+$ kubectl get services
+NAME             TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)          AGE
+frontend         LoadBalancer   10.103.201.214   10.103.201.214   8080:30044/TCP   7m9s
+kubernetes       ClusterIP      10.96.0.1        <none>           443/TCP          30h
+redis-follower   ClusterIP      10.102.254.141   <none>           6379/TCP         7m29s
+redis-leader     ClusterIP      10.108.156.152   <none>           6379/TCP         8m4s
+```
+### Test the deployment
+
+```
+$ curl http://10.103.201.214:8080
+Hello World!
+
+$ curl http://10.103.201.214:8080/get_from_redis
+[{}]
+
+$ curl -X POST -H "Content-Type: application/json" -d '{"key1": 12345}' http://10.103.201.214:8080/add_to_redis
+[{"key1":"12345"}]
+
+$ curl http://10.103.201.214:8080/get_from_redis
+[{"key1":"12345"}]
+```
+
+### Scale the web frontend 
+Scale up the number of frontend Pods:
+```
+$ kubectl scale deployment frontend --replicas=5
+$ kubectl get pods
+```
+Scale down the number of frontend Pods:
+
+```
+$ kubectl scale deployment frontend --replicas=2
+$ kubectl get pods
+```
+
+### Clean up deployments and services
+```
+$ kubectl delete deployment -l app=redis
+$ kubectl delete service -l app=redis
+$ kubectl delete deployment frontend
+$ kubectl delete service frontend
+```
+### Clean up minikube
+```
+$ minikube stop
+✋  Stopping node "minikube"  ...
+🛑  1 node stopped.
+
+$ minikube delete --all
+🔥  Deleting "minikube" in virtualbox ...
+💀  Removed all traces of the "minikube" cluster.
+🔥  Successfully deleted all profiles
+```
+
 
 
