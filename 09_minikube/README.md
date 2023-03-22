@@ -92,6 +92,12 @@ Ref: https://devopscube.com/build-docker-image/
 $ cd ~/github/my_learning/09_minikube/dockerfiles/helloworld
 $ docker build -t kumokay/flask-helloworld:latest .
 $ docker push kumokay/flask-helloworld:latest
+$ docker run kumokay/flask-helloworld:latest
+```
+
+Run in interactive mode (e.g. for debugging)
+```
+$ docker run -it kumokay/flask-helloworld:latest bash
 ```
 ## Deploying an application
 
@@ -120,6 +126,23 @@ deployment.apps/frontend created
 $ kubectl apply -f frontend-service.yaml 
 service/frontend created
 ```
+### Alternatively, you can start up services all at once
+```
+$ cd ~/github/my_learning/09_minikube/application/helloworld
+$ ls
+frontend-deployment.yaml  greeter-deployment.yaml  redis-follower-deployment.yaml  redis-leader-deployment.yaml
+frontend-service.yaml     greeter-service.yaml     redis-follower-service.yaml     redis-leader-service.yaml
+$ kubectl apply -f .
+deployment.apps/frontend created
+service/frontend created
+deployment.apps/greeter created
+service/greeter created
+deployment.apps/redis-follower created
+service/redis-follower created
+deployment.apps/redis-leader created
+service/redis-leader created
+```
+
 ### Query the list of Pods
 ```
 $ kubectl get pods
@@ -234,6 +257,22 @@ $ kubectl delete service -l app=redis
 $ kubectl delete deployment frontend
 $ kubectl delete service frontend
 ```
+Or
+```
+$ kubectl delete deployment --all
+deployment.apps "frontend" deleted
+deployment.apps "greeter" deleted
+deployment.apps "redis-follower" deleted
+deployment.apps "redis-leader" deleted
+
+$ kubectl delete service --all
+service "frontend" deleted
+service "greeter" deleted
+service "kubernetes" deleted
+service "redis-follower" deleted
+service "redis-leader" deleted
+```
+
 ### Clean up minikube
 ```
 $ minikube stop
