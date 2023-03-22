@@ -258,6 +258,22 @@ $ kubectl delete service -l app=redis
 $ kubectl delete deployment frontend
 $ kubectl delete service frontend
 ```
+Or
+```
+$ kubectl delete deployment --all
+deployment.apps "frontend" deleted
+deployment.apps "greeter" deleted
+deployment.apps "redis-follower" deleted
+deployment.apps "redis-leader" deleted
+
+$ kubectl delete service --all
+service "frontend" deleted
+service "greeter" deleted
+service "kubernetes" deleted
+service "redis-follower" deleted
+service "redis-leader" deleted
+```
+
 ### Clean up minikube
 ```
 $ minikube stop
