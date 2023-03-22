@@ -121,6 +121,23 @@ deployment.apps/frontend created
 $ kubectl apply -f frontend-service.yaml 
 service/frontend created
 ```
+### Alternatively, you can start up services all at once
+```
+$ cd ~/github/my_learning/09_minikube/application/helloworld
+$ ls
+frontend-deployment.yaml  greeter-deployment.yaml  redis-follower-deployment.yaml  redis-leader-deployment.yaml
+frontend-service.yaml     greeter-service.yaml     redis-follower-service.yaml     redis-leader-service.yaml
+$ kubectl apply -f .
+deployment.apps/frontend created
+service/frontend created
+deployment.apps/greeter created
+service/greeter created
+deployment.apps/redis-follower created
+service/redis-follower created
+deployment.apps/redis-leader created
+service/redis-leader created
+```
+
 ### Query the list of Pods
 ```
 $ kubectl get pods
