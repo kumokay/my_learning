@@ -3,11 +3,16 @@ FROM ubuntu:20.04
 
 # install app dependencies
 RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install flask==2.1.*
+RUN pip3 install flask[async]
 RUN pip3 install redis
+RUN pip3 install grpcio
+RUN pip3 install grpcio-tools
 
 # install app
 COPY hello.py /
+COPY hellostreamingworld.proto /
+COPY async_greeter_client.py /
+RUN python3 -m grpc_tools.protoc --proto_path=/ --python_out=/ --pyi_out=/ --grpc_python_out=/ hellostreamingworld.proto
 
 # final configuration
 ENV FLASK_APP=hello

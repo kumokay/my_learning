@@ -1,6 +1,12 @@
+"""
+Tutorials: 
+- Flask: https://www.geeksforgeeks.org/flask-app-routing/
+- Redis: https://developer.redis.com/develop/python/
+"""
 from flask import Flask, jsonify, request
 from redis import Redis
-import traceback
+import asyncio
+from async_greeter_client import async_get_response_from_greeter
 
 
 app = Flask(__name__)
@@ -9,6 +15,12 @@ app = Flask(__name__)
 @app.route("/")
 def hello():
     return "Hello World!"
+
+
+@app.route("/greeter/<int:count>")
+async def greeter(count: int):
+  responses = await async_get_response_from_greeter(count)
+  return jsonify(responses)
 
 
 g_data = [{"default": 100}]
