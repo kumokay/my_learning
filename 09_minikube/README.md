@@ -97,6 +97,12 @@ Ref: https://devopscube.com/build-docker-image/
 $ cd ~/github/my_learning/09_minikube/dockerfiles/helloworld
 $ docker build -t kumokay/flask-helloworld:latest .
 $ docker push kumokay/flask-helloworld:latest
+$ docker run kumokay/flask-helloworld:latest
+```
+
+Run in interactive mode (e.g. for debugging)
+```
+$ docker run -it kumokay/flask-helloworld:latest bash
 ```
 
 ### Start up a Redis leader.
