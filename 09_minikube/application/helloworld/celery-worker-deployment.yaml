@@ -1,0 +1,31 @@
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+        app: celery-worker
+        tier: backend
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+        tier: backend
+    spec:
+      containers:
+      - name: celery-worker
+        image: kumokay/celeryworker:latest
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+
+

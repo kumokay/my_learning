@@ -14,15 +14,15 @@
 """The Python AsyncIO implementation of the GRPC hellostreamingworld.MultiGreeter server."""
 
 import asyncio
+import celery
 import logging
-
 import grpc
+
 from hellostreamingworld_pb2 import HelloReply
 from hellostreamingworld_pb2 import HelloRequest
 from hellostreamingworld_pb2_grpc import MultiGreeterServicer
 from hellostreamingworld_pb2_grpc import add_MultiGreeterServicer_to_server
-
-NUMBER_OF_REPLY = 10
+from tasks import greet
 
 
 class Greeter(MultiGreeterServicer):
@@ -30,8 +30,10 @@ class Greeter(MultiGreeterServicer):
     async def sayHello(self, request: HelloRequest,
                        context: grpc.aio.ServicerContext) -> HelloReply:
         logging.info("Serving sayHello request %s", request)
-        for i in range(int(request.num_greetings)):
-            yield HelloReply(message=f"Hello number {i}, {request.name}!")
+        tasks = celery.group(greet.s(request.name, i) for i in range(int(request.num_greetings))).apply_async()
+        results = [task.get() for task in tasks]
+        for result in results:
+            yield HelloReply(message=f"Reply to {request.name} from greeter: {result}")
 
 
 SERVER_PORT = 50051
