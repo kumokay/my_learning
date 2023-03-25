@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: greeter
+  name: frontend
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-        app: greeter
-        tier: backend
+        app: flask
+        tier: frontend
   template:
     metadata:
       labels:
-        app: greeter
-        tier: backend
+        app: flask
+        tier: frontend
     spec:
       containers:
-      - name: greetserver
-        image: kumokay/greetserver:latest
+      - name: helloworld
+        image: kumokay/webserver:latest
         env:
         - name: GET_HOSTS_FROM
           value: "dns"
@@ -26,4 +26,4 @@ spec:
             cpu: 100m
             memory: 100Mi
         ports:
-        - containerPort: 50051
+        - containerPort: 8080

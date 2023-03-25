@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: greeter
+  name: writer
   labels:
-    app: greeter
+    app: writer
     tier: backend
 spec:
   ports:
     # the port that this service should serve on
   - port: 50051
   selector:
-    app: greeter
+    app: writer
     tier: backend

@@ -3,16 +3,19 @@ FROM ubuntu:20.04
 
 # install app dependencies
 RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install flask[async]
+RUN pip3 install redis
 RUN pip3 install grpcio
 RUN pip3 install grpcio-tools
-RUN pip3 install -U celery[redis]
 
 # install app
-COPY hellostreamingworld.proto /
-COPY async_greeter_server.py /
+WORKDIR /myapp/webserver
+COPY src/common ../common
+COPY src/webserver .
 RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. hellostreamingworld.proto
-COPY tasks.py /
 
 # final configuration
-CMD python3 async_greeter_server.py
+ENV FLASK_APP=flaskapp
+EXPOSE 8080
+CMD flask run --host 0.0.0.0 --port 8080
 

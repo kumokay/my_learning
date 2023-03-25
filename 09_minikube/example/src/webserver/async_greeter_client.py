@@ -22,7 +22,7 @@ import hellostreamingworld_pb2
 import hellostreamingworld_pb2_grpc
 
 
-SERVER_DNS = "greeter"
+SERVER_DNS = "writer"
 SERVER_PORT = 50051
 
 async def async_get_response_from_greeter(count: int) -> List[str]:

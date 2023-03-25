@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 RUN pip3 install -U celery[redis]
 
 # install app
-COPY tasks.py /
+WORKDIR /myapp/celeryworker
+COPY src/common ../common
+COPY src/celeryworker .
 
 # final configuration
 CMD celery -A tasks worker --loglevel=INFO

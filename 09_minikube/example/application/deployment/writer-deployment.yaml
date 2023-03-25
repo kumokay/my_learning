@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: writer
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-        app: flask
-        tier: frontend
+        app: writer
+        tier: backend
   template:
     metadata:
       labels:
-        app: flask
-        tier: frontend
+        app: writer
+        tier: backend
     spec:
       containers:
-      - name: helloworld
-        image: kumokay/flask-helloworld:latest
+      - name: writer
+        image: kumokay/writer:latest
         env:
         - name: GET_HOSTS_FROM
           value: "dns"
@@ -26,4 +26,4 @@ spec:
             cpu: 100m
             memory: 100Mi
         ports:
-        - containerPort: 8080
+        - containerPort: 50051
