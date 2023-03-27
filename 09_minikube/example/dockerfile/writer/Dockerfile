@@ -11,8 +11,8 @@ RUN pip3 install -U celery[redis]
 WORKDIR /myapp/writer
 COPY src/common ../common
 COPY src/writer .
-RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. hellostreamingworld.proto
+RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. *.proto
 
 # final configuration
-CMD python3 async_greeter_server.py
+CMD python3 async_writer_server.py
 

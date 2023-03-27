@@ -12,7 +12,7 @@ RUN pip3 install grpcio-tools
 WORKDIR /myapp/webserver
 COPY src/common ../common
 COPY src/webserver .
-RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. hellostreamingworld.proto
+RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. *.proto
 
 # final configuration
 ENV FLASK_APP=flaskapp

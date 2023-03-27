@@ -6,7 +6,7 @@ Tutorials:
 from flask import Flask, jsonify, request
 from redis import Redis
 import asyncio
-from async_greeter_client import async_get_response_from_greeter
+from async_bidder_client import WriterClient
 
 
 app = Flask(__name__)
@@ -17,10 +17,16 @@ def hello():
     return "Hello World!"
 
 
-@app.route("/greeter/<int:count>")
-async def greeter(count: int):
-  responses = await async_get_response_from_greeter(count)
-  return jsonify(responses)
+@app.route("/list_product/<string:product_name>/<int:seller_id>/<float:price>/")
+async def list_product(product_name: str, seller_id: int, price: float):
+  result = await WriterClient.async_list_product(product_name, seller_id, price)
+  return jsonify([result])
+
+
+@app.route("/place_bid/<int:product_id>/<int:bidder_id>/<float:price>/")
+async def place_bid(product_id: int, bidder_id: int, price: float):
+  result = await WriterClient.async_place_bid(product_id, bidder_id, price)
+  return jsonify([result])
 
 
 g_data = [{"default": 100}]
