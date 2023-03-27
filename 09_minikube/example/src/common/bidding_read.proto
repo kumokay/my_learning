@@ -6,13 +6,13 @@ option objc_class_prefix = "HSW";
 package example;
 
 service BiddingReadService {
-  rpc getCatalogue (CatalogueRequest) returns (CatalogueReply) {}
-  rpc getBidHistory (BidHistoryRequest) returns (BidHistoryReply) {}
-  rpc getWinner (WinnerRequest) returns (WinnerReply) {}
+  rpc GetCatalogue (CatalogueRequest) returns (CatalogueReply) {}
+  rpc GetBidHistory (BidHistoryRequest) returns (BidHistoryReply) {}
+  rpc GetWinner (WinnerRequest) returns (WinnerReply) {}
 }
 
 message CatalogueRequest {
-  int32 product_id_begin = 1;
+  int32 next_product_id = 1;
   int32 limit = 2;
 }
 
@@ -24,6 +24,7 @@ message CatalogueReply {
     int32 seller_id = 4;
   }
   repeated Product products = 1;
+  int32 next_product_id = 2;
 }
 
 message BidHistoryRequest {

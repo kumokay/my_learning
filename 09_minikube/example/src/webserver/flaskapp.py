@@ -6,7 +6,7 @@ Tutorials:
 from flask import Flask, jsonify, request
 from redis import Redis
 import asyncio
-from async_bidder_client import WriterClient
+from async_bidder_client import WriterClient, ReaderClient
 
 
 app = Flask(__name__)
@@ -26,6 +26,12 @@ async def list_product(product_name: str, seller_id: int, price: float):
 @app.route("/place_bid/<int:product_id>/<int:bidder_id>/<float:price>/")
 async def place_bid(product_id: int, bidder_id: int, price: float):
   result = await WriterClient.async_place_bid(product_id, bidder_id, price)
+  return jsonify([result])
+
+
+@app.route("/get_catalogue/<int:next_product_id>/<int:limit>/")
+async def get_catalogue(next_product_id: int, limit: int):
+  result = await ReaderClient.async_get_catalogue(next_product_id, limit)
   return jsonify([result])
 
 
