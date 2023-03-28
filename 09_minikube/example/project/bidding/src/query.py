@@ -4,7 +4,9 @@ MYSQL_USER = "root"
 MYSQL_PASSWORD = "mypassword"
 MYSQL_HOST = "wordpress-mysql"
 MYSQL_PORT = 3306
-MYSQL_DB = "bidding_db"
+
+BIDDING_DB = "bidding_db"
+PRODUCT_DB = "product_db"
 
 QUERY_INSERT_PRODUCT = """
 INSERT INTO products (
@@ -31,13 +33,14 @@ INSERT INTO bids (
 class QueryExecutor:
 
     @staticmethod
-    def _start_connection() -> MySQLConnection:
+    def _start_connection(dbname: str) -> MySQLConnection:
         return MySQLConnection(
-                user=MYSQL_USER,
-                password=MYSQL_PASSWORD,
-                host=MYSQL_HOST,
-                port=MYSQL_PORT,
-                database=MYSQL_DB)
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            host=MYSQL_HOST,
+            port=MYSQL_PORT,
+            database=dbname,
+        )
 
     @classmethod
     def place_bid(
@@ -47,7 +50,7 @@ class QueryExecutor:
         price: float,
         bid_at: str
     ) -> int:
-        cnx = cls._start_connection()
+        cnx = cls._start_connection(BIDDING_DB)
         cursor = cnx.cursor()
         cursor.execute(
             QUERY_INSERT_BID,
@@ -68,7 +71,7 @@ class QueryExecutor:
         seller_id: int,
         price: float
     ) -> int:
-        cnx = cls._start_connection()
+        cnx = cls._start_connection(PRODUCT_DB)
         cursor = cnx.cursor()
         cursor.execute(QUERY_INSERT_PRODUCT, (product_name, price, seller_id))
         cnx.commit()
