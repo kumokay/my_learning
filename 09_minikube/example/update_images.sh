@@ -1,6 +1,6 @@
 #!/bin/bash
 
-images=`ls dockerfile`
+projects=`ls project`
 dockerhub="kumokay"
 
 if [ $# != 1 ]; then
@@ -9,13 +9,13 @@ else
     images=$1
 fi
 
-for image in ${images}; do
+for project in ${projects}; do
     echo ""
     echo "****************************************"
-    echo "* build docker image: ${image}"
+    echo "* build docker image: ${project}"
     echo "****************************************"
     echo ""
-    docker build -t ${dockerhub}/${image}:latest -f dockerfile/${image}/Dockerfile .
-    docker push ${dockerhub}/${image}:latest
+    cp common/* project/${project}/
+    docker build -t ${dockerhub}/${project}:latest -f ${project}/Dockerfile project/${project}
+    docker push ${dockerhub}/${project}:latest
 done
-

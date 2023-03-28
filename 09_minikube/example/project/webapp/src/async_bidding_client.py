@@ -4,10 +4,10 @@ import grpc
 from typing import List
 from google.protobuf.json_format import MessageToJson
 
-import bidding_write_pb2
-import bidding_write_pb2_grpc
-import bidding_read_pb2
-import bidding_read_pb2_grpc
+import bidding_pb2
+import bidding_pb2_grpc
+import bidding_pb2
+import bidding_pb2_grpc
 
 
 class ClientBase:
@@ -29,8 +29,8 @@ class WriterClient(ClientBase):
             seller_id: int,
             price: float) -> str:
         async with grpc.aio.insecure_channel(cls.target()) as channel:
-            stub = bidding_write_pb2_grpc.BiddingWriteServiceStub(channel)
-            request = bidding_write_pb2.ListRequest(
+            stub = bidding_pb2_grpc.BiddingServiceStub(channel)
+            request = bidding_pb2.ListRequest(
                     product_name=product_name,
                     seller_id=seller_id,
                     price=price)
@@ -44,8 +44,8 @@ class WriterClient(ClientBase):
             bidder_id: int,
             price: float) -> str:
         async with grpc.aio.insecure_channel(cls.target()) as channel:
-            stub = bidding_write_pb2_grpc.BiddingWriteServiceStub(channel)
-            request = bidding_write_pb2.BidRequest(
+            stub = bidding_pb2_grpc.BiddingServiceStub(channel)
+            request = bidding_pb2.BidRequest(
                     product_id=product_id,
                     bidder_id=bidder_id,
                     price=price)
@@ -62,7 +62,7 @@ class ReaderClient(ClientBase):
             next_product_id: int,
             limit: int) -> List[str]:
         async with grpc.aio.insecure_channel(cls.target()) as channel:
-            stub = bidding_read_pb2_grpc.BiddingReadServiceStub(channel)
+            stub = bidding_pb2_grpc.BiddingServiceStub(channel)
             request = bidding_read_pb2.CatalogueRequest(
                     next_product_id=next_product_id,
                     limit=limit)

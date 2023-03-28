@@ -9,7 +9,7 @@ RUN pip3 install grpcio
 RUN pip3 install grpcio-tools
 
 # install app
-WORKDIR /myapp/webserver
+WORKDIR /myapp/webapp
 COPY src/common ../common
 COPY src/webserver .
 RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. *.proto
@@ -18,4 +18,3 @@ RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grp
 ENV FLASK_APP=flaskapp
 EXPOSE 8080
 CMD flask run --host 0.0.0.0 --port 8080
-

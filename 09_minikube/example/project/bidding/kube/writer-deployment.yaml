@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
       - name: writer
-        image: kumokay/writer:latest
+        image: kumokay/bidding:latest
+        command: ["python3" "async_bidding_server.py"]
         env:
         - name: GET_HOSTS_FROM
           value: "dns"

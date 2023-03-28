@@ -2,4 +2,5 @@
 */.*
 *.box
 *.log
+09_minikube/example/project/*/*.proto
 !/.gitignore
