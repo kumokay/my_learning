@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: webapp
 spec:
   replicas: 1
   selector:
     matchLabels:
-        app: flask
+        app: webapp
         tier: frontend
   template:
     metadata:
       labels:
-        app: flask
+        app: webapp
         tier: frontend
     spec:
       containers:
       - name: helloworld
-        image: kumokay/webserver:latest
+        image: kumokay/webapp:latest
         env:
         - name: GET_HOSTS_FROM
           value: "dns"

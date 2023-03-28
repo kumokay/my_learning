@@ -11,6 +11,7 @@ RUN pip3 install mysql-connector-python
 # install app
 WORKDIR /bidding
 COPY src/ .
+COPY *.proto .
 RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. *.proto
 
 # final configuration

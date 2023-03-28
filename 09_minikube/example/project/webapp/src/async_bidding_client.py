@@ -63,7 +63,7 @@ class ReaderClient(ClientBase):
             limit: int) -> List[str]:
         async with grpc.aio.insecure_channel(cls.target()) as channel:
             stub = bidding_pb2_grpc.BiddingServiceStub(channel)
-            request = bidding_read_pb2.CatalogueRequest(
+            request = bidding_pb2.CatalogueRequest(
                     next_product_id=next_product_id,
                     limit=limit)
             response = await stub.GetCatalogue(request)

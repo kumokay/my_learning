@@ -17,7 +17,7 @@ from bidding_pb2_grpc import add_BiddingServiceServicer_to_server
 from tasks import list_product, place_bid
 
 
-class BiddingServer(BiddingWriteService):
+class BiddingServer(BiddingService):
 
     async def ListProduct(
             self,
@@ -62,7 +62,7 @@ SERVER_PORT = 50051
 
 async def serve() -> None:
     server = grpc.aio.server()
-    add_BiddingWriteServiceServicer_to_server(BiddingServer(), server)
+    add_BiddingServiceServicer_to_server(BiddingServer(), server)
     listen_addr = f"[::]:{SERVER_PORT}"
     server.add_insecure_port(listen_addr)
     logging.info("Starting server on %s", listen_addr)
