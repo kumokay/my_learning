@@ -1,5 +1,3 @@
-import asyncio
-import logging
 import grpc
 from typing import List
 from google.protobuf.json_format import MessageToJson

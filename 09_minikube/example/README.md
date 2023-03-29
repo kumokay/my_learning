@@ -1,4 +1,48 @@
-# How to run
+# Setup python virtual env
+
+## Install pyenv
+ubuntu 16.04
+```
+sudo apt-get update
+sudo apt-get install build-essential git libreadline-dev zlib1g-dev libssl-dev libbz2-dev libsqlite3-dev
+curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+# may need this, but install script above should handle it; and yeah, you can do multiline inserts with awk/sed or whatever
+echo 'export PATH="/root/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+source ~/.bashrc
+pyenv install 3.9
+```
+## Setup python virtual env for each project
+```
+$ cd ${project}
+$ source ~/.bashrc
+$ pyenv virtualenv 3.9.16 ${project}
+$ echo -e "${project}\n3.9.16\n" > .python-version
+(${project}) $ 
+```
+
+## Generate requirements.txt
+First create your requirement.in
+```
+(${project}) $ cat requirement.in
+grpcio
+grpcio-tools
+celery[redis]
+mysql-connector-python
+```
+Then compile
+```
+(${project}) $ pip install pip-tools
+(${project}) $ pip-compile --resolver=backtracking
+```
+
+## Install from requirements.txt
+```
+(${project}) pip install -r requirements.txt
+```
+
+# Setup deployment
 
 ## Start minikube
 ```

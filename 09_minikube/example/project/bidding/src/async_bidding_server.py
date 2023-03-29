@@ -1,5 +1,4 @@
 import asyncio
-import celery
 import grpc
 import logging
 import time
@@ -15,14 +14,16 @@ from bidding_pb2 import (
 from bidding_pb2_grpc import BiddingService
 from bidding_pb2_grpc import add_BiddingServiceServicer_to_server
 from tasks import list_product, place_bid
+from query import QueryExecutor
 
 
 class BiddingServer(BiddingService):
 
     async def ListProduct(
-            self,
-            request: ListRequest,
-            context: grpc.aio.ServicerContext) -> ListReply:
+        self,
+        request: ListRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> ListReply:
         logging.info("[ListProduct] Serving request %s", request)
         task = list_product.s(
             request.product_name, request.seller_id, request.price
@@ -32,8 +33,11 @@ class BiddingServer(BiddingService):
             message=f"[ListProduct] Reply from celery-worker: {result}"
         )
 
-    async def PlaceBid(self, request: BidRequest,
-                       context: grpc.aio.ServicerContext) -> BidReply:
+    async def PlaceBid(
+        self, 
+        request: BidRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> BidReply:
         logging.info("[PlaceBid] Serving request %s", request)
         bid_at = time.strftime('%Y-%m-%d %H:%M:%S')
         task = place_bid.s(
@@ -45,16 +49,28 @@ class BiddingServer(BiddingService):
         )
 
     async def GetCatalogue(
-            self,
-            request: CatalogueRequest,
-            context: grpc.aio.ServicerContext) -> CatalogueReply:
+        self,
+        request: CatalogueRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> CatalogueReply:
         logging.info("[GetCatalogue] Serving request %s", request)
+        result = QueryExecutor.get_catalogue(
+            request.next_product_id, 
+            request.limit
+        )
         products = [
             CatalogueReply.Product(
-                id=n, name=f"product{n}", price=n*2, seller_id=n+1
-            ) for n in range(5)
+                product_id=item.product_id, 
+                product_name=item.product_name,
+                product_price=item.product_price,
+                seller_name=item.seller_name,
+            ) for item in result
         ]
-        return CatalogueReply(products=products, next_product_id=0)
+        next_product_id = (
+            -1 if len(products) < request.limit 
+            else products[-1].product_id + 1
+        )
+        return CatalogueReply(products=products, next_product_id=next_product_id)
 
 
 SERVER_PORT = 50051

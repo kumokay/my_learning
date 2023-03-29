@@ -5,7 +5,7 @@ Tutorials:
 """
 from flask import Flask, jsonify, request
 from redis import Redis
-import asyncio
+
 from async_bidding_client import WriterClient, ReaderClient
 
 

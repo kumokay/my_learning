@@ -1,3 +1,5 @@
+from typing import List, NamedTuple
+
 from mysql.connector.connection import MySQLConnection
 
 MYSQL_USER = "root"
@@ -17,6 +19,30 @@ INSERT INTO products (
   (%s, %s, %s)
 ;
 """
+
+QUERY_SELECT_PRODUCT = """
+SELECT
+  products.id as product_id
+  , products.name as product_name
+  , products.price as product_price
+  , users.name as seller_name
+FROM
+  products
+JOIN users
+  ON products.seller_id = users.id
+WHERE products.id >= %s
+  AND is_active = true
+ORDER BY products.id
+LIMIT %s
+;
+"""
+
+class Product(NamedTuple):
+    product_id: int
+    product_name: str
+    product_price: float
+    seller_name: str
+
 
 QUERY_INSERT_BID = """
 INSERT INTO bids (
@@ -81,3 +107,28 @@ class QueryExecutor:
         cursor.close()
 
         return count
+    
+    @classmethod
+    def get_catalogue(
+        cls,
+        next_product_id: int,
+        limit: int,
+    ) -> List[Product]:
+        cnx = cls._start_connection(PRODUCT_DB)
+        cursor = cnx.cursor()
+        cursor.execute(QUERY_SELECT_PRODUCT, (next_product_id, limit))
+        rows = cursor.fetchall()
+
+        result = [
+            Product(
+                product_id=product_id,
+                product_name=product_name,
+                product_price=product_price,
+                seller_name=seller_name,
+            ) for (product_id, product_name, product_price, seller_name) in rows
+        ]
+
+        cursor.close()
+        cnx.close()
+
+        return result
