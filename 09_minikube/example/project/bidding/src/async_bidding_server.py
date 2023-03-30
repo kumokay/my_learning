@@ -6,13 +6,21 @@ import time
 from bidding_pb2 import (
     BidRequest,
     BidReply,
+    Product,
     CatalogueRequest,
     CatalogueReply,
     ListRequest,
     ListReply,
+    WinnerRequest,
+    WinnerReply,
+    Bid,
+    BidHistoryRequest,
+    BidHistoryReply,
 )
-from bidding_pb2_grpc import BiddingService
-from bidding_pb2_grpc import add_BiddingServiceServicer_to_server
+from bidding_pb2_grpc import (
+    BiddingService,
+    add_BiddingServiceServicer_to_server,
+)
 from tasks import list_product, place_bid
 from query import QueryExecutor
 
@@ -59,7 +67,7 @@ class BiddingServer(BiddingService):
             request.limit
         )
         products = [
-            CatalogueReply.Product(
+            Product(
                 product_id=item.product_id, 
                 product_name=item.product_name,
                 product_price=item.product_price,
@@ -72,6 +80,50 @@ class BiddingServer(BiddingService):
         )
         return CatalogueReply(products=products, next_product_id=next_product_id)
 
+    async def GetWinner(
+        self,
+        request: WinnerRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> WinnerReply:
+        logging.info("[GetWinner] Serving request %s", request)
+        result = QueryExecutor.get_winner(request.product_id_filter)
+        bids = [
+            Bid(
+                bid_id=item.bid_id,
+                product_id=item.product_id, 
+                bidder_id=item.bidder_id,
+                bid_price=item.bid_price,
+                bid_at=item.bid_at,
+            ) for item in result
+        ]
+        return WinnerReply(bids=bids)
+    
+    async def GetBidHistory(
+        self,
+        request: BidHistoryRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> BidHistoryReply:
+        logging.info("[GetBidHistory] Serving request %s", request)
+        result = QueryExecutor.get_bid_history(
+            request.product_id_filter,
+            request.next_bid_id,
+            request.limit,
+        )
+        bids = [
+            Bid(
+                bid_id=item.bid_id,
+                product_id=item.product_id, 
+                bidder_id=item.bidder_id,
+                bid_price=item.bid_price,
+                bid_at=item.bid_at,
+            ) for item in result
+        ]
+        next_bid_id = (
+            -1 if len(bids) < request.limit 
+            else bids[-1].bid_id + 1
+        )
+        return BidHistoryReply(bids=bids, next_bid_id=next_bid_id)
+        
 
 SERVER_PORT = 50051
 

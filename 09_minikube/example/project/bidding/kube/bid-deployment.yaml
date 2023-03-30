@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reader
+  name: bid
 spec:
   replicas: 1
   selector:
     matchLabels:
-        app: reader
+        app: bid
         tier: backend
   template:
     metadata:
       labels:
-        app: reader
+        app: bid
         tier: backend
     spec:
       containers:
-      - name: reader
+      - name: bid
         image: kumokay/bidding:latest
         command: ["python3", "async_bidding_server.py"]
         env:

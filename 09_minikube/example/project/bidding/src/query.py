@@ -37,7 +37,7 @@ LIMIT %s
 ;
 """
 
-class Product(NamedTuple):
+class ProductObj(NamedTuple):
     product_id: int
     product_name: str
     product_price: float
@@ -52,6 +52,30 @@ INSERT INTO bids (
   , bid_at
 ) VALUES
   (%s, %s, %s, %s)
+;
+"""
+
+class BidObj(NamedTuple):
+    bid_id: int
+    product_id: int
+    bidder_id: int
+    bid_price: float
+    bid_at: str
+
+
+QUERY_SELECT_BID = """
+SELECT
+  id as bid_id
+  , product_id
+  , bidder_id
+  , price as bid_price
+  , bid_at
+FROM
+  bids
+WHERE product_id = %s
+  AND id >= %s
+ORDER BY price DESC, bid_at ASC
+LIMIT %s
 ;
 """
 
@@ -113,14 +137,14 @@ class QueryExecutor:
         cls,
         next_product_id: int,
         limit: int,
-    ) -> List[Product]:
+    ) -> List[ProductObj]:
         cnx = cls._start_connection(PRODUCT_DB)
         cursor = cnx.cursor()
         cursor.execute(QUERY_SELECT_PRODUCT, (next_product_id, limit))
         rows = cursor.fetchall()
 
         result = [
-            Product(
+            ProductObj(
                 product_id=product_id,
                 product_name=product_name,
                 product_price=product_price,
@@ -132,3 +156,48 @@ class QueryExecutor:
         cnx.close()
 
         return result
+
+    @classmethod
+    def _get_bid(
+        cls,
+        product_id_filter: int,
+        next_bid_id: int,
+        limit: int
+    ) -> List[BidObj]:
+        cnx = cls._start_connection(BIDDING_DB)
+        cursor = cnx.cursor()
+        cursor.execute(QUERY_SELECT_BID, (product_id_filter, next_bid_id, limit))
+        rows = cursor.fetchall()
+
+        result = [
+            BidObj(
+                bid_id=bid_id,
+                product_id=product_id,
+                bidder_id=bidder_id,
+                bid_price=float(bid_price),  # convert Decimal to float
+                bid_at=str(bid_at),  # convert datetime to string
+            ) for (bid_id, product_id, bidder_id, bid_price, bid_at) in rows
+        ]
+
+        cursor.close()
+        cnx.close()
+
+        return result
+    
+    @classmethod
+    def get_winner(
+        cls,
+        product_id_filter: int,
+    ) -> List[BidObj]:
+        return cls._get_bid(product_id_filter, 0, 1)
+        
+    
+    @classmethod
+    def get_bid_history(
+        cls,
+        product_id_filter: int,
+        next_bid_id: int,
+        limit: int
+    ) -> List[BidObj]:
+        return cls._get_bid(product_id_filter, next_bid_id, limit)
+

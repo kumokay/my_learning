@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: writer
+  name: product
 spec:
   replicas: 1
   selector:
     matchLabels:
-        app: writer
+        app: product
         tier: backend
   template:
     metadata:
       labels:
-        app: writer
+        app: product
         tier: backend
     spec:
       containers:
-      - name: writer
+      - name: product
         image: kumokay/bidding:latest
         command: ["python3", "async_bidding_server.py"]
         env:
