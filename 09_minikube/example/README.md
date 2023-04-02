@@ -53,6 +53,11 @@ screen3 $ minikube tunnel
 
 ## Build docker image in each folder
 
+First, to point your terminal to use the docker daemon inside minikube run this:
+```
+eval $(minikube docker-env)
+```
+Build image:
 ```
 $ cd example/project/${project}/
 $ docker build -t ${dockerhub}/${project}:latest -f Dockerfile .
@@ -89,5 +94,6 @@ $ kubectl rollout restart deployment/${project}
 $ cd example/application
 $ kubectl delete deployment --all
 $ kubectl delete service --all
+$ kubectl delete pvc --all
 $ stop minikube
 ```

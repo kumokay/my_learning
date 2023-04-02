@@ -6,54 +6,61 @@ Tutorials:
 from flask import Flask, jsonify, request
 from redis import Redis
 
-from async_bidding_client import BidClient, ProductClient
+from bidding_client import BidClient
+from product_client import ProductClient
 
 
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.get("/")
 def hello():
     return "Hello World!"
 
 
-@app.route(
-    "/list_product/<string:product_name>/<int:seller_id>/<float:price>/",
-    methods=["POST", "GET"],
-)
-async def list_product(product_name: str, seller_id: int, price: float):
+@app.get("/list_product/<string:product_name>/<int:seller_id>/<float:price>/")
+async def list_product_for_testing(product_name: str, seller_id: int, price: float):
     result = await ProductClient.async_list_product(product_name, seller_id, price)
     return jsonify([result])
 
 
-@app.route(
-    "/get_catalogue/<int:next_product_id>/<int:limit>/",
-    methods=["GET"],
-)
+@app.post("/list_product/")
+async def list_product():
+    product_name = request.json['product_name']
+    seller_id = request.json['seller_id']
+    price = request.json['price']
+    result = await ProductClient.async_list_product(product_name, seller_id, price)
+    return jsonify([result])
+
+
+@app.get("/get_catalogue/<int:next_product_id>/<int:limit>/")
 async def get_catalogue(next_product_id: int, limit: int):
     result = await ProductClient.async_get_catalogue(next_product_id, limit)
     return jsonify([result])
 
 
-@app.route("/place_bid/<int:product_id>/<int:bidder_id>/<float:price>/")
-async def place_bid(product_id: int, bidder_id: int, price: float):
-  result = await BidClient.async_place_bid(product_id, bidder_id, price)
-  return jsonify([result])
+@app.get("/place_bid/<int:product_id>/<int:bidder_id>/<float:price>/")
+async def place_bid_for_testing(product_id: int, bidder_id: int, price: float):
+    result = await BidClient.async_place_bid(product_id, bidder_id, price)
+    return jsonify([result])
 
 
-@app.route(
-    "/get_bid_history/<int:product_id_filter>/<int:next_bid_id>/<int:limit>/",
-    methods=["GET"]
-)
+@app.post("/place_bid/")
+async def place_bid():
+    product_id = request.json['product_id']
+    bidder_id = request.json['bidder_id']
+    price = request.json['price']
+    result = await BidClient.async_place_bid(product_id, bidder_id, price)
+    return jsonify([result])
+
+
+@app.get("/get_bid_history/<int:product_id_filter>/<int:next_bid_id>/<int:limit>/")
 async def get_bid_history(product_id_filter: int, next_bid_id: int, limit: int):
     result = await BidClient.async_get_bid_history(product_id_filter, next_bid_id, limit)
     return jsonify([result])
 
 
-@app.route(
-    "/get_winner/<int:product_id_filter>/",
-    methods=["GET"]
-)
+@app.get("/get_winner/<int:product_id_filter>/",)
 async def get_winner(product_id_filter: int):
     result = await BidClient.async_get_winner(product_id_filter)
     return jsonify([result])

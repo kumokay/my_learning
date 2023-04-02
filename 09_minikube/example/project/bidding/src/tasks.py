@@ -34,13 +34,3 @@ def place_bid(
         f"for {count} product-{product_id}"
     )
 
-
-@app.task
-def list_product(product_name: str, seller_id: int, price: float) -> str:
-    count = QueryExecutor.list_product(product_name, seller_id, price)
-    # add delay
-    time.sleep(EXECTIME)
-    return (
-        f"[{HOSTNAME}] user-{seller_id} listed {count} "
-        f"product-{product_name} at ${price}"
-    )
