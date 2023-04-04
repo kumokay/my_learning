@@ -60,9 +60,9 @@ async def get_bid_history(auction_id_filter: int, next_bid_id: int, limit: int):
     return jsonify([result])
 
 
-@app.get("/get_winner/<int:auction_id_filter>/",)
-async def get_winner(auction_id_filter: int):
-    result = await BidClient.async_get_winner(auction_id_filter)
+@app.get("/get_highest_bid/<int:auction_id_filter>/",)
+async def get_highest_bid(auction_id_filter: int):
+    result = await BidClient.async_get_highest_bid(auction_id_filter)
     return jsonify([result])
 
 

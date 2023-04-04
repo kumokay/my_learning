@@ -13,14 +13,6 @@ else
     fi
 fi
 
-function print_test_header() {
-    echo ""
-    echo "****************************************"
-    echo "* " $1
-    echo "****************************************"
-    echo ""
-}
-
 
 function create_auction() {
     # curl http://${app_ip}:8080/create_auction/orange/3/5.2/
@@ -44,8 +36,8 @@ function get_bid_history() {
     curl http://${app_ip}:8080/get_bid_history/1/0/100/ | json_pp
 }
 
-function get_winner() {
-    curl http://${app_ip}:8080/get_winner/1/ | json_pp
+function get_highest_bid() {
+    curl http://${app_ip}:8080/get_highest_bid/1/ | json_pp
 }
 
 declare -a testcases=(
@@ -53,8 +45,16 @@ declare -a testcases=(
     get_auctions
     place_bid
     get_bid_history
-    get_winner
+    get_highest_bid
 )
+
+function print_test_header() {
+    echo ""
+    echo "****************************************"
+    echo "* " $1
+    echo "****************************************"
+    echo ""
+}
 
 case ${test_name} in
 

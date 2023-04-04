@@ -6,8 +6,8 @@ import time
 from bidding_pb2 import (
     BidRequest,
     BidReply,
-    WinnerRequest,
-    WinnerReply,
+    HighestBidRequest,
+    HighestBidReply,
     Bid,
     BidHistoryRequest,
     BidHistoryReply,
@@ -37,13 +37,13 @@ class BiddingServer(BiddingService):
             message=f"[placeBid] Reply from celery-worker: {result}"
         )
 
-    async def GetWinner(
+    async def GetHighestBid(
         self,
-        request: WinnerRequest,
+        request: HighestBidRequest,
         context: grpc.aio.ServicerContext,
-    ) -> WinnerReply:
-        logging.info("[GetWinner] Serving request %s", request)
-        result = QueryExecutor.get_winner(request.auction_id_filter)
+    ) -> HighestBidReply:
+        logging.info("[GetHighestBid] Serving request %s", request)
+        result = QueryExecutor.get_highest_bid(request.auction_id_filter)
         bids = [
             Bid(
                 bid_id=item.bid_id,
@@ -53,7 +53,7 @@ class BiddingServer(BiddingService):
                 bid_at=item.bid_at,
             ) for item in result
         ]
-        return WinnerReply(bids=bids)
+        return HighestBidReply(bids=bids)
     
     async def GetBidHistory(
         self,

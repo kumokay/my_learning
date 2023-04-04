@@ -8,7 +8,7 @@ package example;
 service BiddingService {
   rpc PlaceBid (BidRequest) returns (BidReply) {}
   rpc GetBidHistory (BidHistoryRequest) returns (BidHistoryReply) {}
-  rpc GetWinner (WinnerRequest) returns (WinnerReply) {}
+  rpc GetHighestBid (HighestBidRequest) returns (HighestBidReply) {}
 }
 
 message BidRequest {
@@ -40,10 +40,10 @@ message BidHistoryReply {
   int32 next_bid_id = 2;
 }
 
-message WinnerRequest {
+message HighestBidRequest {
   int32 auction_id_filter = 1;
 }
 
-message WinnerReply {
+message HighestBidReply {
   repeated Bid bids = 1;
 }

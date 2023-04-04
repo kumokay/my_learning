@@ -107,7 +107,7 @@ class QueryExecutor:
         return result
     
     @classmethod
-    def get_winner(
+    def get_highest_bid(
         cls,
         auction_id_filter: int,
     ) -> List[BidObj]:

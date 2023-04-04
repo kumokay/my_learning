@@ -26,16 +26,16 @@ class BidClient(ClientBase):
             return response.message
         
     @classmethod
-    async def async_get_winner(
+    async def async_get_highest_bid(
         cls,
         auction_id_filter: int,
     ) -> str:
         async with cls.get_channel() as channel:
             stub = bidding_pb2_grpc.BiddingServiceStub(channel)
-            request = bidding_pb2.WinnerRequest(
+            request = bidding_pb2.HighestBidRequest(
                 auction_id_filter=auction_id_filter,
             )
-            response = await stub.GetWinner(request)
+            response = await stub.GetHighestBid(request)
             return [MessageToJson(bid) for bid in response.bids]
         
     @classmethod
