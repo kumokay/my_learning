@@ -40,3 +40,16 @@ class AuctionClient(ClientBase):
             )
             response = await stub.GetAuctions(request)
             return [MessageToJson(auction) for auction in response.auctions]
+        
+    @classmethod
+    async def async_payment_complete(
+        cls,
+        payment_id: int,
+    ) -> List[str]:
+        async with cls.get_channel() as channel:
+            stub = auction_pb2_grpc.AuctionServiceStub(channel)
+            request = auction_pb2.PaymentCompleteRequest(
+                payment_id=payment_id,
+            )
+            response = await stub.PaymentComplete(request)
+            return response.message

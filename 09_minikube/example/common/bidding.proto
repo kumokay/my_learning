@@ -42,6 +42,7 @@ message BidHistoryReply {
 
 message HighestBidRequest {
   int32 auction_id_filter = 1;
+  bool read_from_leader = 2;
 }
 
 message HighestBidReply {

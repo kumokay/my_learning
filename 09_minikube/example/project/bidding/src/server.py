@@ -43,7 +43,10 @@ class BiddingServer(BiddingService):
         context: grpc.aio.ServicerContext,
     ) -> HighestBidReply:
         logging.info("[GetHighestBid] Serving request %s", request)
-        result = QueryExecutor.get_highest_bid(request.auction_id_filter)
+        result = QueryExecutor.get_highest_bid(
+            request.auction_id_filter, 
+            request.read_from_leader,
+        )
         bids = [
             Bid(
                 bid_id=item.bid_id,

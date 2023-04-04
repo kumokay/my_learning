@@ -42,6 +42,14 @@ LIMIT %s
 ;
 """
 
+QUERY_UPDATE_PAYMENT="""
+UPDATE payments
+SET
+  status = %s
+WHERE
+  payment_id = %s
+"""
+
 class AuctionObj(NamedTuple):
     auction_id: int
     auction_name: str
@@ -130,3 +138,22 @@ class QueryExecutor:
         cnx.close()
 
         return result
+    
+    @classmethod
+    def update_payment(
+        cls,
+        payment_id,
+        status,
+    ) -> int:
+        cnx = cls._start_connection()
+        cursor = cnx.cursor()
+        cursor.execute(
+            QUERY_UPDATE_PAYMENT, (status, payment_id),
+        )
+        cnx.commit()
+        cnx.close()
+
+        count = cursor.rowcount
+        cursor.close()
+
+        return count

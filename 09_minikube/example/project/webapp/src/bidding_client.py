@@ -34,6 +34,7 @@ class BidClient(ClientBase):
             stub = bidding_pb2_grpc.BiddingServiceStub(channel)
             request = bidding_pb2.HighestBidRequest(
                 auction_id_filter=auction_id_filter,
+                read_from_leader=False,
             )
             response = await stub.GetHighestBid(request)
             return [MessageToJson(bid) for bid in response.bids]

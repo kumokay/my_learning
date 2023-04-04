@@ -110,7 +110,9 @@ class QueryExecutor:
     def get_highest_bid(
         cls,
         auction_id_filter: int,
+        read_from_leader: bool
     ) -> List[BidObj]:
+        # read_from_leader is not implemented
         return cls._get_bid(auction_id_filter, 0, 1)
         
     

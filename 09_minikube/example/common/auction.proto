@@ -8,6 +8,7 @@ package example;
 service AuctionService {
   rpc CreateAuction (CreateAuctionRequest) returns (CreateAuctionReply) {}
   rpc GetAuctions (GetAuctionsRequest) returns (GetAuctionsReply) {}
+  rpc PaymentComplete (PaymentCompleteRequest) returns (PaymentCompleteReply) {}
 }
 
 message CreateAuctionRequest {
@@ -38,4 +39,12 @@ message Auction {
 message GetAuctionsReply {  
   repeated Auction auctions = 1;
   int32 next_auction_id = 2;
+}
+
+message PaymentCompleteRequest {
+  int32 payment_id = 1;
+}
+
+message PaymentCompleteReply {
+  string message = 1;
 }

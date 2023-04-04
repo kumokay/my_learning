@@ -9,6 +9,8 @@ from auction_pb2 import (
     GetAuctionsReply,
     CreateAuctionRequest,
     CreateAuctionReply,
+    PaymentCompleteRequest,
+    PaymentCompleteReply,
 )
 from auction_pb2_grpc import (
     AuctionService,
@@ -25,7 +27,7 @@ class AuctionServer(AuctionService):
         request: CreateAuctionRequest,
         context: grpc.aio.ServicerContext,
     ) -> CreateAuctionReply:
-        logging.info("[ListAuction] Serving request %s", request)
+        logging.info("[CreateAuction] Serving request %s", request)
         start_at = datetime.now()
         end_at = start_at + timedelta(days=10)
         status = 'ongoing'
@@ -38,7 +40,7 @@ class AuctionServer(AuctionService):
             status,
         )
         return CreateAuctionReply(
-            message=f"[ListAuction] user-{request.seller_id} listed {count} "
+            message=f"[CreateAuction] user-{request.seller_id} listed {count} "
                     f"auction-{request.auction_name} at ${request.price}"
         )
 
@@ -69,6 +71,20 @@ class AuctionServer(AuctionService):
         )
         return GetAuctionsReply(auctions=auctions, next_auction_id=next_auction_id)
         
+    async def PaymentComplete(
+        self,
+        request: PaymentCompleteRequest,
+        context: grpc.aio.ServicerContext,
+    ) -> PaymentCompleteReply:
+        logging.info("[PaymentComplete] Serving request %s", request)
+        status = 'completed'
+        count = QueryExecutor.update_payment_to_completed(
+            request.payment_id,
+            status,
+        )
+        return PaymentCompleteReply(
+            message=f"[PaymentComplete] payment-{request.payment_id} is {status}"
+        )
 
 SERVER_PORT = 50051
 
