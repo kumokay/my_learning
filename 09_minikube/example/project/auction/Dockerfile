@@ -5,12 +5,12 @@ FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y python3 python3-pip
 
 # install app
-WORKDIR /product
+WORKDIR /auction
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY src/ .
-COPY tmp/product.proto .
+COPY tmp/auction.proto .
 RUN python3 -m grpc_tools.protoc --proto_path=. --python_out=. --pyi_out=. --grpc_python_out=. *.proto
 
 # final configuration

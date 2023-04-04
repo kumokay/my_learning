@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product
+  name: auction
 spec:
   replicas: 1
   selector:
     matchLabels:
-        app: product
+        app: auction
         tier: backend
   template:
     metadata:
       labels:
-        app: product
+        app: auction
         tier: backend
     spec:
       containers:
-      - name: product
-        image: kumokay/product:latest
+      - name: auction
+        image: kumokay/auction:latest
         command: ["python3", "server.py"]
         env:
         - name: GET_HOSTS_FROM

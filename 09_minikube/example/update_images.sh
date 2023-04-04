@@ -18,9 +18,9 @@ for project in ${projects}; do
     echo "* build docker image: ${project}"
     echo "****************************************"
     echo ""
-    cp -r ${current_dir}/common/ ${current_dir}/project/${project}/tmp
+    cp -r ${current_dir}/common/ ${current_dir}/project/${project}/tmp/
     cd ${current_dir}/project/${project}
     docker build -t ${dockerhub}/${project}:latest -f Dockerfile .
     docker push ${dockerhub}/${project}:latest
-    rm -r ${current_dir}/project/${project}/tmp
+    rm -r ${current_dir}/project/${project}/tmp/
 done

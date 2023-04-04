@@ -11,7 +11,7 @@ DB_NAME = "bidding_db"
 
 QUERY_INSERT_BID = """
 INSERT INTO bids (
-  product_id
+  auction_id
   , bidder_id
   , price
   , bid_at
@@ -22,7 +22,7 @@ INSERT INTO bids (
 
 class BidObj(NamedTuple):
     bid_id: int
-    product_id: int
+    auction_id: int
     bidder_id: int
     bid_price: float
     bid_at: str
@@ -31,13 +31,13 @@ class BidObj(NamedTuple):
 QUERY_SELECT_BID = """
 SELECT
   id as bid_id
-  , product_id
+  , auction_id
   , bidder_id
   , price as bid_price
   , bid_at
 FROM
   bids
-WHERE product_id = %s
+WHERE auction_id = %s
   AND id >= %s
 ORDER BY price DESC, bid_at ASC
 LIMIT %s
@@ -60,7 +60,7 @@ class QueryExecutor:
     @classmethod
     def place_bid(
         cls,
-        product_id: int,
+        auction_id: int,
         bidder_id: int,
         price: float,
         bid_at: str
@@ -69,7 +69,7 @@ class QueryExecutor:
         cursor = cnx.cursor()
         cursor.execute(
             QUERY_INSERT_BID,
-            (product_id, bidder_id, price, bid_at)
+            (auction_id, bidder_id, price, bid_at)
         )
         cnx.commit()
         cnx.close()
@@ -82,23 +82,23 @@ class QueryExecutor:
     @classmethod
     def _get_bid(
         cls,
-        product_id_filter: int,
+        auction_id_filter: int,
         next_bid_id: int,
         limit: int
     ) -> List[BidObj]:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
-        cursor.execute(QUERY_SELECT_BID, (product_id_filter, next_bid_id, limit))
+        cursor.execute(QUERY_SELECT_BID, (auction_id_filter, next_bid_id, limit))
         rows = cursor.fetchall()
 
         result = [
             BidObj(
                 bid_id=bid_id,
-                product_id=product_id,
+                auction_id=auction_id,
                 bidder_id=bidder_id,
                 bid_price=float(bid_price),  # convert Decimal to float
                 bid_at=str(bid_at),  # convert datetime to string
-            ) for (bid_id, product_id, bidder_id, bid_price, bid_at) in rows
+            ) for (bid_id, auction_id, bidder_id, bid_price, bid_at) in rows
         ]
 
         cursor.close()
@@ -109,17 +109,17 @@ class QueryExecutor:
     @classmethod
     def get_winner(
         cls,
-        product_id_filter: int,
+        auction_id_filter: int,
     ) -> List[BidObj]:
-        return cls._get_bid(product_id_filter, 0, 1)
+        return cls._get_bid(auction_id_filter, 0, 1)
         
     
     @classmethod
     def get_bid_history(
         cls,
-        product_id_filter: int,
+        auction_id_filter: int,
         next_bid_id: int,
         limit: int
     ) -> List[BidObj]:
-        return cls._get_bid(product_id_filter, next_bid_id, limit)
+        return cls._get_bid(auction_id_filter, next_bid_id, limit)
 

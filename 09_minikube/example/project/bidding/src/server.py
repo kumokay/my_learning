@@ -30,7 +30,7 @@ class BiddingServer(BiddingService):
         logging.info("[PlaceBid] Serving request %s", request)
         bid_at = time.strftime('%Y-%m-%d %H:%M:%S')
         task = place_bid.s(
-            request.product_id, request.bidder_id, request.price, bid_at
+            request.auction_id, request.bidder_id, request.price, bid_at
         ).apply_async()
         result = task.get()
         return BidReply(
@@ -43,11 +43,11 @@ class BiddingServer(BiddingService):
         context: grpc.aio.ServicerContext,
     ) -> WinnerReply:
         logging.info("[GetWinner] Serving request %s", request)
-        result = QueryExecutor.get_winner(request.product_id_filter)
+        result = QueryExecutor.get_winner(request.auction_id_filter)
         bids = [
             Bid(
                 bid_id=item.bid_id,
-                product_id=item.product_id, 
+                auction_id=item.auction_id, 
                 bidder_id=item.bidder_id,
                 bid_price=item.bid_price,
                 bid_at=item.bid_at,
@@ -62,14 +62,14 @@ class BiddingServer(BiddingService):
     ) -> BidHistoryReply:
         logging.info("[GetBidHistory] Serving request %s", request)
         result = QueryExecutor.get_bid_history(
-            request.product_id_filter,
+            request.auction_id_filter,
             request.next_bid_id,
             request.limit,
         )
         bids = [
             Bid(
                 bid_id=item.bid_id,
-                product_id=item.product_id, 
+                auction_id=item.auction_id, 
                 bidder_id=item.bidder_id,
                 bid_price=item.bid_price,
                 bid_at=item.bid_at,

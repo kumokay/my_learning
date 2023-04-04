@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-mysql
+  name: auction-mysql
   labels:
-    app: product
+    app: auction
 spec:
   selector:
     matchLabels:
-      app: product
+      app: auction
       tier: mysql
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: product
+        app: auction
         tier: mysql
     spec:
       containers:
@@ -27,10 +27,10 @@ spec:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: product-mysql-persistent-storage
+        - name: auction-mysql-persistent-storage
           mountPath: /var/lib/mysql
       volumes:
-      - name: product-mysql-persistent-storage
+      - name: auction-mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: product-mysql-pv-claim
+          claimName: auction-mysql-pv-claim
 

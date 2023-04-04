@@ -20,13 +20,13 @@ USE bidding_db
 CREATE TABLE bids (
   PRIMARY KEY (id)
   , id INT NOT NULL AUTO_INCREMENT
-  , product_id INT NOT NULL
+  , auction_id INT NOT NULL
   , bidder_id INT NOT NULL
   , price DECIMAL(15, 2) NOT NULL
   , bid_at DATETIME NOT NULL
   /*
-  , CONSTRAINT bid_product_id_fk
-    FOREIGN KEY (product_id) REFERENCES products (id)
+  , CONSTRAINT bid_auction_id_fk
+    FOREIGN KEY (auction_id) REFERENCES auctions (id)
   , CONSTRAINT bid_bidder_id_fk
     FOREIGN KEY (bidder_id) REFERENCES users (id)
   */
@@ -34,7 +34,7 @@ CREATE TABLE bids (
 ;
 
 INSERT INTO bids (
-  product_id
+  auction_id
   , bidder_id
   , price
   , bid_at
@@ -55,3 +55,4 @@ SELECT
   , update_time
 FROM INFORMATION_SCHEMA.TABLES
 WHERE table_schema = 'bidding_db'
+;

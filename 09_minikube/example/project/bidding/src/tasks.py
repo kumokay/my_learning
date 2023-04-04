@@ -21,16 +21,16 @@ EXECTIME = 3
 
 @app.task
 def place_bid(
-    product_id: int,
+    auction_id: int,
     bidder_id: int,
     price: float,
     bid_at: str,
 ) -> str:
-    count = QueryExecutor.place_bid(product_id, bidder_id, price, bid_at)
+    count = QueryExecutor.place_bid(auction_id, bidder_id, price, bid_at)
     # add delay
     time.sleep(EXECTIME)
     return (
         f"[{HOSTNAME}] user-{bidder_id} bid ${price} "
-        f"for {count} product-{product_id}"
+        f"for {count} auction-{auction_id}"
     )
 

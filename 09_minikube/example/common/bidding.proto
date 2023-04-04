@@ -12,7 +12,7 @@ service BiddingService {
 }
 
 message BidRequest {
-  int32 product_id = 1;
+  int32 auction_id = 1;
   int32 bidder_id = 2;
   double price = 3;
 }
@@ -22,14 +22,14 @@ message BidReply {
 }
 
 message BidHistoryRequest {
-  int32 product_id_filter = 1;
+  int32 auction_id_filter = 1;
   int32 next_bid_id = 2;
   int32 limit = 3;
 }
 
 message Bid {
   int32 bid_id = 1;
-  int32 product_id = 2;
+  int32 auction_id = 2;
   int32 bidder_id = 3;
   double bid_price = 4;
   string bid_at = 5;
@@ -41,7 +41,7 @@ message BidHistoryReply {
 }
 
 message WinnerRequest {
-  int32 product_id_filter = 1;
+  int32 auction_id_filter = 1;
 }
 
 message WinnerReply {

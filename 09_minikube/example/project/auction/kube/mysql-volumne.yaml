@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: product-mysql-pv-claim
+  name: auction-mysql-pv-claim
   labels:
-    app: product
+    app: auction
 spec:
   accessModes:
     - ReadWriteOnce
