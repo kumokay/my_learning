@@ -87,7 +87,9 @@ INSERT INTO payments (
   , created_at
   , status
 ) VALUES
-  (1, 1, 1, 3.99, current_timestamp, 'epending')
+  (1, 1, 1, 2.99, current_timestamp, 'pending')
+  , (1, 1, 1, 3.99, current_timestamp, 'pending')
+  , (1, 1, 1, 4.99, current_timestamp, 'pending')
 ;
 
 /*

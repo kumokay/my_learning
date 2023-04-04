@@ -47,7 +47,7 @@ UPDATE payments
 SET
   status = %s
 WHERE
-  payment_id = %s
+  id = %s
 """
 
 class AuctionObj(NamedTuple):

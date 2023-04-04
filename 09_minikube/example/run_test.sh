@@ -40,12 +40,26 @@ function get_highest_bid() {
     curl http://${app_ip}:8080/get_highest_bid/1/ | json_pp
 }
 
+function test_get_credit_card() {
+    curl http://${app_ip}:8080/test_get_credit_card/1/ | json_pp
+}
+
+function test_payment_complete() {
+    curl -d '{"payment_id":1}' \
+    -H "Content-Type: application/json" \
+    http://${app_ip}:8080/test_payment_complete/
+}
+
 declare -a testcases=(
+    # public urls
     create_auction
     get_auctions
     place_bid
     get_bid_history
     get_highest_bid
+    # test only urls
+    test_get_credit_card
+    test_payment_complete
 )
 
 function print_test_header() {

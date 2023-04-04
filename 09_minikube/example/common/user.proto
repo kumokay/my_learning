@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_package = "ex.grpc";
+option objc_class_prefix = "HSW";
+
+package example;
+
+service UserService {
+  rpc GetCreditCard (GetCreditCardRequest) returns (GetCreditCardReply) {}
+}
+
+message GetCreditCardRequest {
+  int32 user_id = 1;
+}
+
+message CreditCard {
+  string card_holder_name = 1;
+  string card_number = 2;
+}
+
+message GetCreditCardReply {
+  CreditCard credit_card = 1;
+}

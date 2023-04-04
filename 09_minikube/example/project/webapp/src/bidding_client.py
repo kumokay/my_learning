@@ -7,7 +7,7 @@ import bidding_pb2_grpc
 
 
 class BidClient(ClientBase):
-    SERVER_DNS = "bid"
+    SERVER_DNS = "bidding"
 
     @classmethod
     async def async_place_bid(

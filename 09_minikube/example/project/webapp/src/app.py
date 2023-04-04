@@ -4,10 +4,10 @@ Tutorials:
 - Redis: https://developer.redis.com/develop/python/
 """
 from flask import Flask, jsonify, request
-from redis import Redis
 
 from bidding_client import BidClient
 from auction_client import AuctionClient
+from user_client import UserClient
 
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ def hello():
 
 
 @app.get("/create_auction/<string:auction_name>/<int:seller_id>/<float:price>/")
-async def create_auction_for_testing(auction_name: str, seller_id: int, price: float):
+async def test_create_auction(auction_name: str, seller_id: int, price: float):
     result = await AuctionClient.async_create_auction(auction_name, seller_id, price)
     return jsonify([result])
 
@@ -40,7 +40,7 @@ async def get_auctions(next_auction_id: int, limit: int):
 
 
 @app.get("/place_bid/<int:auction_id>/<int:bidder_id>/<float:price>/")
-async def place_bid_for_testing(auction_id: int, bidder_id: int, price: float):
+async def test_place_bid(auction_id: int, bidder_id: int, price: float):
     result = await BidClient.async_place_bid(auction_id, bidder_id, price)
     return jsonify([result])
 
@@ -66,43 +66,16 @@ async def get_highest_bid(auction_id_filter: int):
     return jsonify([result])
 
 
-g_data = [{"default": 100}]
+"""
+TESTING
+"""
+@app.get("/test_get_credit_card/<int:user_id>/")
+async def test_get_credit_card(user_id: int):
+    result = await UserClient.async_get_credit_card(user_id)
+    return jsonify([result])
 
-
-@app.route("/get_data")
-def get_data():
-    return jsonify(g_data)
-
-
-@app.route("/add_data", methods=["POST"])
-def add_data():
-    g_data.append(request.get_json())
-    return jsonify(g_data)
-
-
-REDIS_LEADER_DNS = "redis-leader"
-REDIS_FOLLOWER_DNS = "redis-follower"
-REDIS_PORT = 6379
-REDIS_DB = 0
-
-
-@app.route("/get_from_redis")
-def get_from_redis():
-    r = Redis(host=REDIS_FOLLOWER_DNS, port=REDIS_PORT, db=REDIS_DB)
-    byte_keys = r.keys()
-    byte_vals = r.mget(byte_keys)
-    keys = [x.decode('utf-8') for x in byte_keys]
-    vals = [x.decode('utf-8') for x in byte_vals]
-    return jsonify([dict(zip(keys, vals))])
-
-
-@app.route("/add_to_redis", methods=["POST"])
-def add_to_redis():
-    r = Redis(host=REDIS_LEADER_DNS, port=REDIS_PORT, db=REDIS_DB)
-    r.mset(request.get_json())
-    # read from leader
-    byte_keys = r.keys()
-    byte_vals = r.mget(byte_keys)
-    keys = [x.decode('utf-8') for x in byte_keys]
-    vals = [x.decode('utf-8') for x in byte_vals]
-    return jsonify([dict(zip(keys, vals))])
+@app.post("/test_payment_complete/")
+async def test_payment_complete():
+    payment_id = request.json['payment_id']
+    result = await AuctionClient.async_payment_complete(payment_id)
+    return jsonify([result])

@@ -1,5 +1,4 @@
 flask[async]
-redis
 grpcio
 grpcio-tools
 

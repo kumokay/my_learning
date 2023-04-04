@@ -78,12 +78,12 @@ class AuctionServer(AuctionService):
     ) -> PaymentCompleteReply:
         logging.info("[PaymentComplete] Serving request %s", request)
         status = 'completed'
-        count = QueryExecutor.update_payment_to_completed(
+        count = QueryExecutor.update_payment(
             request.payment_id,
             status,
         )
         return PaymentCompleteReply(
-            message=f"[PaymentComplete] payment-{request.payment_id} is {status}"
+            message=f"[PaymentComplete] {count} payment-{request.payment_id} is {status}"
         )
 
 SERVER_PORT = 50051
