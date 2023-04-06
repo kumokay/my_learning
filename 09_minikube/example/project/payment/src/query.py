@@ -9,7 +9,7 @@ MYSQL_PORT = 3306
 
 DB_NAME = "payment_db"
 
-QUERY_INSERT_TRANSACTIONS = """
+QUERY_INSERT_OR_UPDATE_TRANSACTION = """
 INSERT INTO transactions (
   payment_id
   , card_holder_name
@@ -20,10 +20,11 @@ INSERT INTO transactions (
   , status
 ) VALUES
   (%s, %s, %s, %s, %s, %s, %s)
+ON DUPLICATE KEY UPDATE
 ;
 """
 
-QUERY_UPDATE_TRANSACTIONS="""
+QUERY_UPDATE_TRANSACTION="""
 UPDATE transactions
 SET
   3rd_party_transaction_id = %s
@@ -58,7 +59,7 @@ class QueryExecutor:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
         cursor.execute(
-            QUERY_INSERT_TRANSACTIONS,
+            QUERY_INSERT_OR_UPDATE_TRANSACTION,
             (
                 payment_id, 
                 card_holder_name, 
@@ -87,7 +88,7 @@ class QueryExecutor:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
         cursor.execute(
-            QUERY_UPDATE_TRANSACTIONS,
+            QUERY_UPDATE_TRANSACTION,
             (
                 third_party_transaction_id,
                 status,

@@ -27,6 +27,7 @@ CREATE TABLE transactions (
   , 3rd_party_transaction_id VARCHAR(32) NOT NULL
   , initiated_at DATETIME NOT NULL
   , status ENUM ('initiating', 'processing', 'completed')
+  , UNIQUE KEY unique_payment_id (payment_id)
 )
 ;
 
