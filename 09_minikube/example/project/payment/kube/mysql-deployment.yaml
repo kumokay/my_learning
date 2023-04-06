@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-mysql
+  labels:
+    app: payment
+spec:
+  selector:
+    matchLabels:
+      app: payment
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: payment
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: mypassword
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: payment-mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: payment-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: payment-mysql-pv-claim
+

@@ -1,0 +1,4 @@
+grpcio
+grpcio-tools
+celery[redis]
+mysql-connector-python

@@ -1,0 +1,15 @@
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: v1
+kind: Service
+metadata:
+  name: bidding
+  labels:
+    app: bidding
+    tier: backend
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 50051
+  selector:
+    app: bidding
+    tier: backend

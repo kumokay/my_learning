@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "ex.grpc";
+option objc_class_prefix = "HSW";
+
+package example;
+
+service PaymentService {
+  rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentReply) {}
+}
+
+message ProcessPaymentRequest {
+  int32 payment_id = 1;
+  string card_holder_name = 1;
+  string card_number = 2;
+  int32 price = 3;
+}
+
+message ProcessPaymentReply {
+  string message = 1;
+}

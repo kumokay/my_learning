@@ -1,0 +1,30 @@
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+        app: payment
+        tier: backend
+  template:
+    metadata:
+      labels:
+        app: payment
+        tier: backend
+    spec:
+      containers:
+      - name: payment
+        image: kumokay/payment:latest
+        command: ["python3", "server.py"]
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 50051
