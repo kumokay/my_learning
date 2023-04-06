@@ -42,7 +42,7 @@ protobuf==4.22.1
     #   mysql-connector-python
 pytz==2023.2
     # via celery
-redis==4.5.3
+redis==4.5.4
     # via celery
 six==1.16.0
     # via click-repl
