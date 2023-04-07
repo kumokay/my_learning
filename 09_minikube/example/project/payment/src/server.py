@@ -12,7 +12,6 @@ from payment_pb2_grpc import (
     add_PaymentServiceServicer_to_server,
 )
 from tasks import process_payment
-from query import QueryExecutor
 
 
 class PaymentServer(PaymentService):

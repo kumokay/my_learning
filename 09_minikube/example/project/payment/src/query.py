@@ -9,28 +9,42 @@ MYSQL_PORT = 3306
 
 DB_NAME = "payment_db"
 
-QUERY_INSERT_OR_UPDATE_TRANSACTION = """
+QUERY_SELECT_TRANSACTION = """
+SELECT
+  payment_id
+  , status
+FROM transactions
+WHERE 
+  payment_id = %s
+;
+"""
+
+class TransactionObj(NamedTuple):
+    payment_id: int
+    status: str
+
+QUERY_INSERT_TRANSACTION = """
 INSERT INTO transactions (
   payment_id
   , card_holder_name
   , card_number
   , price
-  , 3rd_party_transaction_id
+  , third_party_transaction_id
   , initiated_at
   , status
 ) VALUES
   (%s, %s, %s, %s, %s, %s, %s)
-ON DUPLICATE KEY UPDATE
 ;
 """
 
 QUERY_UPDATE_TRANSACTION="""
 UPDATE transactions
 SET
-  3rd_party_transaction_id = %s
+  third_party_transaction_id = %s
   , status = %s
 WHERE
-  payment_id = %s
+  id = %s
+  AND payment_id = %s
 """
 
 class QueryExecutor:
@@ -44,6 +58,31 @@ class QueryExecutor:
             port=MYSQL_PORT,
             database=DB_NAME,
         )
+    
+    @classmethod
+    def select_transaction(
+        cls,
+        payment_id: int,
+    ) -> List[TransactionObj]:
+        cnx = cls._start_connection()
+        cursor = cnx.cursor()
+        cursor.execute(
+            QUERY_SELECT_TRANSACTION,
+            (payment_id, )
+        )
+        rows = cursor.fetchall()
+
+        result = [
+            TransactionObj(
+                payment_id=payment_id,
+                status=status,
+            ) for (payment_id, status) in rows
+        ]
+
+        cursor.close()
+        cnx.close()
+
+        return result
 
     @classmethod
     def insert_transaction(
@@ -59,7 +98,7 @@ class QueryExecutor:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
         cursor.execute(
-            QUERY_INSERT_OR_UPDATE_TRANSACTION,
+            QUERY_INSERT_TRANSACTION,
             (
                 payment_id, 
                 card_holder_name, 
@@ -73,14 +112,15 @@ class QueryExecutor:
         cnx.commit()
         cnx.close()
 
-        count = cursor.rowcount
+        lastrowid = cursor.lastrowid
         cursor.close()
 
-        return count
+        return lastrowid
     
     @classmethod
     def update_transaction(
         cls,
+        transaction_id: int,
         payment_id: int,
         third_party_transaction_id: str,
         status: str
@@ -92,6 +132,7 @@ class QueryExecutor:
             (
                 third_party_transaction_id,
                 status,
+                transaction_id,
                 payment_id, 
             )
         )

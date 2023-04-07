@@ -4,18 +4,18 @@ kind: Deployment
 metadata:
   name: payment-redis-leader
   labels:
-    app: payment-redis
+    app: payment
     role: leader
     tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payment-redis
+      app: payment
   template:
     metadata:
       labels:
-        app: payment-redis
+        app: payment
         role: leader
         tier: backend
     spec:

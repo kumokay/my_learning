@@ -8,6 +8,7 @@ from flask import Flask, jsonify, request
 from bidding_client import BidClient
 from auction_client import AuctionClient
 from user_client import UserClient
+from payment_client import PaymentClient
 
 
 app = Flask(__name__)
@@ -78,4 +79,18 @@ async def test_get_credit_card(user_id: int):
 async def test_payment_complete():
     payment_id = request.json['payment_id']
     result = await AuctionClient.async_payment_complete(payment_id)
+    return jsonify([result])
+
+@app.post("/test_process_payment/")
+async def test_process_payment():
+    payment_id = request.json['payment_id']
+    card_holder_name = request.json['card_holder_name']
+    card_number = request.json['card_number']
+    price = request.json['price']
+    result = await PaymentClient.async_process_payment(                
+        payment_id,
+        card_holder_name,
+        card_number,
+        price,
+    )
     return jsonify([result])

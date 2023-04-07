@@ -50,6 +50,12 @@ function test_payment_complete() {
     http://${app_ip}:8080/test_payment_complete/
 }
 
+function test_process_payment() {
+    curl -d '{"payment_id": 10, "card_holder_name": "user10-real-name", "card_number": "000000001111-10", "price": 23}' \
+    -H "Content-Type: application/json" \
+    http://${app_ip}:8080/test_process_payment/
+}
+
 declare -a testcases=(
     # public urls
     create_auction
@@ -60,6 +66,7 @@ declare -a testcases=(
     # test only urls
     test_get_credit_card
     test_payment_complete
+    test_process_payment
 )
 
 function print_test_header() {

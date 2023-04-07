@@ -24,10 +24,9 @@ CREATE TABLE transactions (
   , card_holder_name VARCHAR(32) NOT NULL
   , card_number VARCHAR(16) NOT NULL
   , price DECIMAL(15, 2) NOT NULL
-  , 3rd_party_transaction_id VARCHAR(32) NOT NULL
+  , third_party_transaction_id VARCHAR(32) NOT NULL
   , initiated_at DATETIME NOT NULL
-  , status ENUM ('initiating', 'processing', 'completed')
-  , UNIQUE KEY unique_payment_id (payment_id)
+  , status ENUM ('initiating', 'processing', 'aborted', 'completed')
 )
 ;
 
@@ -36,7 +35,7 @@ INSERT INTO transactions (
   , card_holder_name
   , card_number
   , price
-  , 3rd_party_transaction_id
+  , third_party_transaction_id
   , initiated_at
   , status
 ) VALUES

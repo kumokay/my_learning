@@ -11,9 +11,9 @@ service PaymentService {
 
 message ProcessPaymentRequest {
   int32 payment_id = 1;
-  string card_holder_name = 1;
-  string card_number = 2;
-  int32 price = 3;
+  string card_holder_name = 2;
+  string card_number = 3;
+  int32 price = 4;
 }
 
 message ProcessPaymentReply {
