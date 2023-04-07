@@ -1,0 +1,28 @@
+# SOURCE: https://cloud.google.com/kubernetes-engine/docs/tutorials/guestbook
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-beat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-beat
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: payment-beat
+        tier: backend
+    spec:
+      containers:
+      - name: payment-beat
+        image: kumokay/payment:latest
+        command: ["celery", "-A", "scheduler", "beat", "--loglevel=DEBUG"]
+        env:
+        - name: GET_HOSTS_FROM
+          value: "dns"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi

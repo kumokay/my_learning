@@ -9,9 +9,11 @@ MYSQL_PORT = 3306
 
 DB_NAME = "payment_db"
 
-QUERY_SELECT_TRANSACTION = """
+QUERY_SELECT_TRANSACTION_BY_PAYMENTID = """
 SELECT
-  payment_id
+  id
+  ,payment_id
+  , third_party_transaction_id
   , status
 FROM transactions
 WHERE 
@@ -19,8 +21,23 @@ WHERE
 ;
 """
 
+QUERY_SELECT_TRANSACTION_BY_STATUS = """
+SELECT
+  id
+  , payment_id
+  , third_party_transaction_id
+  , status
+FROM transactions
+WHERE 
+  status = %s
+LIMIT %s
+;
+"""
+
 class TransactionObj(NamedTuple):
+    id: int
     payment_id: int
+    third_party_transaction_id: str
     status: str
 
 QUERY_INSERT_TRANSACTION = """
@@ -60,23 +77,63 @@ class QueryExecutor:
         )
     
     @classmethod
-    def select_transaction(
+    def select_transaction_by_status(
+        cls,
+        status: str,
+        limit: int
+    ) -> List[TransactionObj]:
+        cnx = cls._start_connection()
+        cursor = cnx.cursor()
+        cursor.execute(
+            QUERY_SELECT_TRANSACTION_BY_STATUS,
+            (status, limit)
+        )
+        rows = cursor.fetchall()
+
+        result = [
+            TransactionObj(
+                id=id,
+                payment_id=payment_id,
+                third_party_transaction_id=third_party_transaction_id,
+                status=status,
+            ) for (
+                id, 
+                payment_id, 
+                third_party_transaction_id, 
+                status
+            ) in rows
+        ]
+
+        cursor.close()
+        cnx.close()
+
+        return result
+    
+    @classmethod
+    def select_transaction_by_payment_id(
         cls,
         payment_id: int,
     ) -> List[TransactionObj]:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
         cursor.execute(
-            QUERY_SELECT_TRANSACTION,
+            QUERY_SELECT_TRANSACTION_BY_PAYMENTID,
             (payment_id, )
         )
         rows = cursor.fetchall()
 
         result = [
             TransactionObj(
+                id=id,
                 payment_id=payment_id,
+                third_party_transaction_id=third_party_transaction_id,
                 status=status,
-            ) for (payment_id, status) in rows
+            ) for (
+                id, 
+                payment_id, 
+                third_party_transaction_id, 
+                status
+            ) in rows
         ]
 
         cursor.close()
