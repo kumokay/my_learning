@@ -60,8 +60,8 @@ INSERT INTO auctions (
   , status
 ) VALUES
   ('prod1_from_user1', 3.99, 1, current_timestamp - 300, current_timestamp, 'ended')
-  , ('prod2_from_user1', 2.99, 1, current_timestamp + 3, current_timestamp + 150, 'ongoing')
-  , ('prod3_from_user1', 4.99, 1, current_timestamp - 9, current_timestamp + 250, 'ongoing')
+  , ('prod2_from_user1', 2.99, 1, current_timestamp - 200, current_timestamp, 'ended')
+  , ('prod3_from_user1', 4.99, 1, current_timestamp - 100, current_timestamp, 'ended')
   , ('prod4_from_user2', 399.99, 2, current_timestamp + 10, current_timestamp + 320, 'ongoing')
   , ('prod5_from_user3', 10.99, 3, current_timestamp, current_timestamp + 450, 'ongoing')
   , ('prod6_from_user3', 123.45, 3, current_timestamp + 100, current_timestamp + 580, 'ongoing')
@@ -87,9 +87,9 @@ INSERT INTO payments (
   , created_at
   , status
 ) VALUES
-  (1, 1, 1, 2.99, current_timestamp, 'pending')
-  , (1, 1, 1, 3.99, current_timestamp, 'pending')
-  , (1, 1, 1, 4.99, current_timestamp, 'pending')
+  (3, 1, 2, 3.99, current_timestamp, 'pending')
+  , (4, 2, 2, 2.99, current_timestamp, 'pending')
+  , (5, 3, 3, 4.99, current_timestamp, 'pending')
 ;
 
 /*

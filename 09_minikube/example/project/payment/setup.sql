@@ -39,9 +39,9 @@ INSERT INTO transactions (
   , initiated_at
   , status
 ) VALUES
-  (1, "user1-real-name", "000000001111-1", 13.00, "transaction-1", current_timestamp, 'processing')
-  , (1, "user1-real-name", "000000001111-1", 20.00, "transaction-2", current_timestamp + 1, 'processing')
-  , (1, "user1-real-name", "000000001111-1", 23.00, "", current_timestamp + 5, 'initiating')
+  (1, "user2-real-name", "000000002222-2", 11.00, "transaction-1", current_timestamp - 100, 'processing')
+  , (2, "user2-real-name", "000000002222-2", 22.00, "", current_timestamp, 'processing')
+  , (3, "user3-real-name", "0000000013333-3", 33.00, "", current_timestamp, 'processing')
 ;
 
 /*

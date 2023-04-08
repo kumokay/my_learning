@@ -140,16 +140,17 @@ class QueryExecutor:
         return result
     
     @classmethod
-    def update_payment(
+    def update_payments(
         cls,
-        payment_id,
+        payment_ids,
         status,
     ) -> int:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
-        cursor.execute(
-            QUERY_UPDATE_PAYMENT, (status, payment_id),
-        )
+        for payment_id in payment_ids:
+          cursor.execute(
+              QUERY_UPDATE_PAYMENT, (status, payment_id),
+          )
         cnx.commit()
         cnx.close()
 

@@ -78,7 +78,7 @@ async def test_get_credit_card(user_id: int):
 @app.post("/test_payment_complete/")
 async def test_payment_complete():
     payment_id = request.json['payment_id']
-    result = await AuctionClient.async_payment_complete(payment_id)
+    result = await AuctionClient.async_payment_complete([payment_id])
     return jsonify([result])
 
 @app.post("/test_process_payment/")

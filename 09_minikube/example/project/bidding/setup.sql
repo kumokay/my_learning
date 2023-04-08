@@ -39,9 +39,11 @@ INSERT INTO bids (
   , price
   , bid_at
 ) VALUES
-  (1, 3, 13.00, current_timestamp)
-  , (1, 4, 20.00, current_timestamp + 1)
-  , (1, 4, 23.00, current_timestamp + 5)
+  (1, 2, 5.00, current_timestamp - 500)
+  , (1, 3, 7.00, current_timestamp - 400)
+  , (1, 2, 11.00, current_timestamp - 300)
+  , (2, 2, 22.00, current_timestamp - 200)
+  , (3, 3, 33.00, current_timestamp - 100)
 ;
 
 /*

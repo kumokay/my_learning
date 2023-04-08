@@ -2,16 +2,25 @@ import socket
 import logging
 from typing import List
 from celery import Celery
+import grpc
+import asyncio
+
 from query import QueryExecutor, TransactionObj
 from third_party_payment_process import ThirdPartyPaymentProcess
 
+import auction_pb2
+import auction_pb2_grpc
+
+
 app = Celery(broker='redis://payment-redis-leader:6379/0',
              backend='redis://payment-redis-leader:6379/1')
+
 
 # Optional configuration, see the application user guide.
 app.conf.update(
     result_expires=3600,
 )
+
 
 HOSTNAME = socket.gethostname()
 
@@ -62,8 +71,23 @@ def process_payment(
     )
 
 
+async def async_payment_complete(
+    payment_ids: List[int],
+) -> List[str]:
+    server_dns = "auction"
+    server_port = 50051
+    target = f"{server_dns}:{server_port}"
+    async with grpc.aio.insecure_channel(target) as channel:
+        stub = auction_pb2_grpc.AuctionServiceStub(channel)
+        request = auction_pb2.PaymentCompleteRequest(
+            payment_ids=payment_ids,
+        )
+        response = await stub.PaymentComplete(request)
+        return response.message
+
+
 @app.task
-def check_payment_status(limit: int) -> None:
+def check_payment_status(limit: int) -> str:
     logging.info(f"[check_payment_status] periodic task started")
     # get all transactions in process
     status = 'processing'
@@ -94,3 +118,7 @@ def check_payment_status(limit: int) -> None:
             f"transaction-{tx.third_party_transaction_id} is completed")
         
     # update completed payments
+    payment_ids = [tx.payment_id for tx in completed_transactions]
+    response = asyncio.run(async_payment_complete(payment_ids))
+    logging.info(f"[check_payment_status] {response}")
+    return "[check_payment_status] task completed"

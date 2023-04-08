@@ -42,7 +42,7 @@ message GetAuctionsReply {
 }
 
 message PaymentCompleteRequest {
-  int32 payment_id = 1;
+  repeated int32 payment_ids = 1;
 }
 
 message PaymentCompleteReply {
