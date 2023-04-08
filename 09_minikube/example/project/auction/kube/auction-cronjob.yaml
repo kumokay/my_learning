@@ -1,0 +1,18 @@
+# https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: auction-cronjob
+spec:
+  schedule: "* * * * *" # every minute https://crontab.guru/#*_*_*_*_*
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: auction-cronjob
+            image: kumokay/auction:latest
+            command:
+            - python3
+            - process_ended_auction.py
+          restartPolicy: OnFailure
