@@ -9,11 +9,15 @@ service PaymentService {
   rpc ProcessPayment (ProcessPaymentRequest) returns (ProcessPaymentReply) {}
 }
 
-message ProcessPaymentRequest {
+message Payment {
   int32 payment_id = 1;
   string card_holder_name = 2;
   string card_number = 3;
-  int32 price = 4;
+  float price = 4;
+}
+
+message ProcessPaymentRequest {
+  repeated Payment payments = 1;
 }
 
 message ProcessPaymentReply {

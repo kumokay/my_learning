@@ -22,17 +22,18 @@ class PaymentServer(PaymentService):
         context: grpc.aio.ServicerContext,
     ) -> ProcessPaymentReply:
         logging.info("[ProcessPayment] Serving request %s", request)
-        initiated_at = time.strftime('%Y-%m-%d %H:%M:%S')
-        task = process_payment.s(
-            request.payment_id,
-            request.card_holder_name,
-            request.card_number,
-            request.price,
-            initiated_at,
-        ).apply_async()
-        result = task.get()
+        for payment in request.payments:
+            initiated_at = time.strftime('%Y-%m-%d %H:%M:%S')
+            task = process_payment.s(
+                payment.payment_id,
+                payment.card_holder_name,
+                payment.card_number,
+                payment.price,
+                initiated_at,
+            ).apply_async()
+            task.forget()
         return ProcessPaymentReply(
-            message=f"[ProcessPayment] Reply from celery-worker: {result}"
+            message=f"[ProcessPayment] Sent task-process_payment to celery-worker"
         )
 
 

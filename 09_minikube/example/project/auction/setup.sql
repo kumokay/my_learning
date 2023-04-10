@@ -17,26 +17,6 @@ COLLATE utf8_unicode_ci
 USE auction_db
 ;
 
-CREATE TABLE users (
-  PRIMARY KEY (id)
-  , id INT NOT NULL AUTO_INCREMENT
-  , name VARCHAR(255) NOT NULL
-  , email VARCHAR(255) NOT NULL
-  , UNIQUE KEY users_email_uidx (email)
-)
-;
-
-INSERT INTO users (
-  name
-  , email
-) VALUES
-  ('user1', 'user1@email')
-  , ('user2', 'user2@email')
-  , ('user3', 'user3@email')
-  , ('user4', 'user4@email')
-  , ('user5', 'user5@email')
-;
-
 CREATE TABLE auctions (
   PRIMARY KEY (id)
   , id INT NOT NULL AUTO_INCREMENT
@@ -46,8 +26,6 @@ CREATE TABLE auctions (
   , start_at DATETIME NOT NULL
   , end_at DATETIME NOT NULL
   , status ENUM ('created','ongoing','ended') NOT NULL
-  , CONSTRAINT auctions_seller_id_fk
-    FOREIGN KEY (seller_id) REFERENCES users (id)
 )
 ;
 

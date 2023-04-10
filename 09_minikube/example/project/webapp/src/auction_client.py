@@ -30,12 +30,14 @@ class AuctionClient(ClientBase):
     async def async_get_auctions(
         cls,
         next_auction_id: int,
+        status_filter: str,
         limit: int
     ) -> List[str]:
         async with cls.get_channel() as channel:
             stub = auction_pb2_grpc.AuctionServiceStub(channel)
             request = auction_pb2.GetAuctionsRequest(
                 next_auction_id=next_auction_id,
+                status_filter=status_filter,
                 limit=limit,
             )
             response = await stub.GetAuctions(request)

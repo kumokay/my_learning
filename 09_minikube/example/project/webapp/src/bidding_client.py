@@ -1,7 +1,7 @@
 from google.protobuf.json_format import MessageToJson
+from typing import List
 
 from client_base import ClientBase
-
 import bidding_pb2
 import bidding_pb2_grpc
 
@@ -28,12 +28,12 @@ class BidClient(ClientBase):
     @classmethod
     async def async_get_highest_bid(
         cls,
-        auction_id_filter: int,
+        auction_ids_filter: List[int],
     ) -> str:
         async with cls.get_channel() as channel:
             stub = bidding_pb2_grpc.BiddingServiceStub(channel)
             request = bidding_pb2.HighestBidRequest(
-                auction_id_filter=auction_id_filter,
+                auction_ids_filter=auction_ids_filter,
                 read_from_leader=False,
             )
             response = await stub.GetHighestBid(request)

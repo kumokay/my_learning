@@ -10,7 +10,7 @@ service UserService {
 }
 
 message GetCreditCardRequest {
-  int32 user_id = 1;
+  repeated int32 user_ids = 1;
 }
 
 message CreditCard {
@@ -19,5 +19,5 @@ message CreditCard {
 }
 
 message GetCreditCardReply {
-  CreditCard credit_card = 1;
+  repeated CreditCard credit_cards = 1;
 }

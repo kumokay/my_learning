@@ -24,15 +24,15 @@ class UserServer(UserService):
     ) -> GetCreditCardReply:
         logging.info("[GetCreditCard] Serving request %s", request)
         result = QueryExecutor.get_credit_card(
-            request.user_id, 
+            request.user_ids, 
         )
-        assert(len(result) == 1)
-        item = result[0]
-        credit_card = CreditCard(
-            card_holder_name=item.card_holder_name,
-            card_number=item.card_number,
-        )
-        return GetCreditCardReply(credit_card=credit_card)
+        credit_cards = [
+            CreditCard(
+                card_holder_name=item.card_holder_name,
+                card_number=item.card_number,
+            ) for item in result
+        ]
+        return GetCreditCardReply(credit_cards=credit_cards)
 
 
 SERVER_PORT = 50051

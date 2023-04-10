@@ -80,26 +80,28 @@ class QueryExecutor:
         return count
 
     @classmethod
-    def _get_bid(
+    def _get_bids(
         cls,
-        auction_id_filter: int,
+        auction_ids_filter: List[int],
         next_bid_id: int,
         limit: int
     ) -> List[BidObj]:
+        result: List[BidObj] = []
+
         cnx = cls._start_connection()
         cursor = cnx.cursor()
-        cursor.execute(QUERY_SELECT_BID, (auction_id_filter, next_bid_id, limit))
-        rows = cursor.fetchall()
-
-        result = [
-            BidObj(
-                bid_id=bid_id,
-                auction_id=auction_id,
-                bidder_id=bidder_id,
-                bid_price=float(bid_price),  # convert Decimal to float
-                bid_at=str(bid_at),  # convert datetime to string
-            ) for (bid_id, auction_id, bidder_id, bid_price, bid_at) in rows
-        ]
+        for auction_id_filter in auction_ids_filter:
+            cursor.execute(QUERY_SELECT_BID, (auction_id_filter, next_bid_id, limit))
+            rows = cursor.fetchall()
+            result = result + [
+                BidObj(
+                    bid_id=bid_id,
+                    auction_id=auction_id,
+                    bidder_id=bidder_id,
+                    bid_price=float(bid_price),  # convert Decimal to float
+                    bid_at=str(bid_at),  # convert datetime to string
+                ) for (bid_id, auction_id, bidder_id, bid_price, bid_at) in rows
+            ]
 
         cursor.close()
         cnx.close()
@@ -109,19 +111,19 @@ class QueryExecutor:
     @classmethod
     def get_highest_bid(
         cls,
-        auction_id_filter: int,
+        auction_ids_filter: List[int],
         read_from_leader: bool
     ) -> List[BidObj]:
         # read_from_leader is not implemented
-        return cls._get_bid(auction_id_filter, 0, 1)
+        return cls._get_bids(auction_ids_filter, 0, 1)
         
     
     @classmethod
     def get_bid_history(
         cls,
-        auction_id_filter: int,
+        auction_ids_filter: List[int],
         next_bid_id: int,
         limit: int
     ) -> List[BidObj]:
-        return cls._get_bid(auction_id_filter, next_bid_id, limit)
+        return cls._get_bids(auction_ids_filter, next_bid_id, limit)
 

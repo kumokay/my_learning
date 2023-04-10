@@ -7,11 +7,13 @@ spec:
   schedule: "* * * * *" # every minute https://crontab.guru/#*_*_*_*_*
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 100
       template:
         spec:
           containers:
           - name: auction-cronjob
             image: kumokay/auction:latest
+            imagePullPolicy: IfNotPresent
             command:
             - python3
             - process_ended_auction.py

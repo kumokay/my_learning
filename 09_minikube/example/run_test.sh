@@ -1,57 +1,61 @@
 #!/bin/bash
 
-app_ip=127.0.0.1
+app_ip=`kubectl get services | grep webapp | awk '{ print $4 }'`
 test_name="all"
 
-if [ $# != 1 ] && [ $# != 2 ]; then
-    echo "usage: $0 <app_ip> [test_name]"
+if [ $# -ne 0 ] && [ $# -gt 1 ]; then
+    echo "usage: $0 [test_name]"
     exit 1
-else
-    app_ip=$1
-    if [ $# = 2 ]; then
-        test_name=$2
-    fi
+elif [ $# = 1 ]; then
+    test_name=$1
 fi
 
+curlcmd="curl --silent"
 
 function create_auction() {
-    # curl http://${app_ip}:8080/create_auction/orange/3/5.2/
-    curl -d '{"auction_name":"orange", "seller_id":3, "price":5.2}' \
+    ${curlcmd} -d '{"auction_name":"orange", "seller_id":3, "price":5.2}' \
     -H "Content-Type: application/json" \
     -X POST http://${app_ip}:8080/create_auction/
 }
 
 function get_auctions() {
-    curl http://${app_ip}:8080/get_auctions/0/100/ | json_pp
+    echo "=== ongoing auctions ==="
+    ${curlcmd} http://${app_ip}:8080/get_auctions/0/ongoing/100/ | json_pp
+
+    echo "=== ended auctions ==="
+    ${curlcmd} http://${app_ip}:8080/get_auctions/0/ended/100/ | json_pp
 }
 
 function place_bid() {
-    # curl http://${app_ip}:8080/place_bid/1/3/999.99/ 
-    curl -d '{"auction_id":1, "bidder_id":3, "price":999.99}' \
+    ${curlcmd} -d '{"auction_id":1, "bidder_id":3, "price":999.99}' \
     -H "Content-Type: application/json" \
     http://${app_ip}:8080/place_bid/
 }
 
 function get_bid_history() {
-    curl http://${app_ip}:8080/get_bid_history/1/0/100/ | json_pp
+    ${curlcmd} http://${app_ip}:8080/get_bid_history/1/0/100/ | json_pp
 }
 
 function get_highest_bid() {
-    curl http://${app_ip}:8080/get_highest_bid/1/ | json_pp
+    ${curlcmd} http://${app_ip}:8080/get_highest_bid/1/ | json_pp
 }
 
 function test_get_credit_card() {
-    curl http://${app_ip}:8080/test_get_credit_card/1/ | json_pp
+    ${curlcmd} http://${app_ip}:8080/test_get_credit_card/1/ | json_pp
 }
 
 function test_payment_complete() {
-    curl -d '{"payment_id":1}' \
+    ${curlcmd} -d '{"payment_id":1}' \
     -H "Content-Type: application/json" \
     http://${app_ip}:8080/test_payment_complete/
 }
 
 function test_process_payment() {
-    curl -d '{"payment_id": 10, "card_holder_name": "user10-real-name", "card_number": "000000001111-10", "price": 23}' \
+    json_input='
+        {"payment_id": 10, "card_holder_name": "user10-real-name",
+        "card_number": "000000001111-10", "price": 23}
+    '
+    ${curlcmd} -d "${json_input}" \
     -H "Content-Type: application/json" \
     http://${app_ip}:8080/test_process_payment/
 }

@@ -41,22 +41,24 @@ class QueryExecutor:
     @classmethod
     def get_credit_card(
         cls,
-        user_id: int,
+        user_ids: List[int],
     ) -> List[CreditCardObj]:
+        result: List[CreditCardObj] = []
+
         cnx = cls._start_connection()
         cursor = cnx.cursor()
-        cursor.execute(QUERY_SELECT_CREDIT_CARD, (user_id, ))
-        rows = cursor.fetchall()
-
-        result = [
-            CreditCardObj(
-                card_holder_name=card_holder_name,
-                card_number=card_number,
-            ) for (
-                card_holder_name, 
-                card_number, 
-            ) in rows
-        ]
+        for user_id in user_ids:
+            cursor.execute(QUERY_SELECT_CREDIT_CARD, (user_id, ))
+            rows = cursor.fetchall()
+            result = result + [
+                CreditCardObj(
+                    card_holder_name=card_holder_name,
+                    card_number=card_number,
+                ) for (
+                    card_holder_name, 
+                    card_number, 
+                ) in rows
+            ]
 
         cursor.close()
         cnx.close()

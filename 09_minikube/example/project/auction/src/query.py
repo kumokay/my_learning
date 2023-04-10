@@ -24,20 +24,18 @@ INSERT INTO auctions (
 
 QUERY_SELECT_AUCTION = """
 SELECT
-  auctions.id as auction_id
-  , auctions.name as auction_name
-  , auctions.start_price as start_price
-  , users.name as seller_name
-  , auctions.start_at as start_at
-  , auctions.end_at as end_at
-  , auctions.status as status
+  id
+  , name
+  , start_price
+  , seller_id
+  , start_at
+  , end_at
+  , status
 FROM
   auctions
-JOIN users
-  ON auctions.seller_id = users.id
-WHERE auctions.id >= %s
-  AND status = 'ongoing'
-ORDER BY auctions.id
+WHERE id >= %s
+  AND status = %s
+ORDER BY id
 LIMIT %s
 ;
 """
@@ -50,11 +48,24 @@ WHERE
   id = %s
 """
 
+QUERY_INSERT_PAYMENT = """
+INSERT INTO payments (
+  bid_id
+  , auction_id
+  , user_id
+  , price
+  , created_at
+  , status
+) VALUES
+  (%s, %s, %s, %s, %s, %s)
+;
+"""
+
 class AuctionObj(NamedTuple):
-    auction_id: int
-    auction_name: str
+    id: int
+    name: str
     start_price: float
-    seller_name: str
+    seller_id: int
     start_at: str
     end_at: str
     status: str
@@ -107,27 +118,31 @@ class QueryExecutor:
     def get_auctions(
         cls,
         next_auction_id: int,
+        status_filter: str,
         limit: int,
     ) -> List[AuctionObj]:
         cnx = cls._start_connection()
         cursor = cnx.cursor()
-        cursor.execute(QUERY_SELECT_AUCTION, (next_auction_id, limit))
+        cursor.execute(
+            QUERY_SELECT_AUCTION, 
+            (next_auction_id, status_filter, limit),
+        )
         rows = cursor.fetchall()
 
         result = [
             AuctionObj(
-                auction_id=auction_id,
-                auction_name=auction_name,
+                id=id,
+                name=name,
                 start_price=float(start_price),  # convert Decimal to float,
-                seller_name=seller_name,
+                seller_id=seller_id,
                 start_at=str(start_at),  # convert Datetime to str,
                 end_at=str(end_at),  # convert Datetime to str,
                 status=status,
             ) for (
-                auction_id, 
-                auction_name, 
+                id, 
+                name, 
                 start_price,
-                seller_name, 
+                seller_id,
                 start_at, 
                 end_at, 
                 status,
@@ -158,3 +173,34 @@ class QueryExecutor:
         cursor.close()
 
         return count
+    
+    @classmethod
+    def create_payment(
+        cls,
+        bid_id: int,
+        auction_id: int,
+        user_id: int,
+        price: float,
+        created_at: str,
+        status: str,
+    ) -> int:
+        cnx = cls._start_connection()
+        cursor = cnx.cursor()
+        cursor.execute(
+            QUERY_INSERT_PAYMENT, 
+            (
+              bid_id,
+              auction_id,
+              user_id,
+              price,
+              created_at,
+              status,
+            ),
+        )
+        cnx.commit()
+        cnx.close()
+
+        lastrowid = cursor.lastrowid
+        cursor.close()
+
+        return lastrowid

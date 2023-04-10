@@ -5,7 +5,7 @@ dockerhub="kumokay"
 current_dir=`pwd`
 
 if [ $# != 1 ]; then
-    echo "usage: $0 [<image_name>]"
+    echo "usage: $0 [<project_name>]"
 else
     projects=$1
 fi

@@ -52,14 +52,15 @@ class AuctionServer(AuctionService):
         logging.info("[GetAuctions] Serving request %s", request)
         result = QueryExecutor.get_auctions(
             request.next_auction_id, 
+            request.status_filter,
             request.limit
         )
         auctions = [
             Auction(
-                auction_id=item.auction_id, 
-                auction_name=item.auction_name,
+                auction_id=item.id, 
+                auction_name=item.name,
+                seller_id=item.seller_id,
                 start_price=item.start_price,
-                seller_name=item.seller_name,
                 start_at=item.start_at,
                 end_at=item.end_at,
                 status=item.status,

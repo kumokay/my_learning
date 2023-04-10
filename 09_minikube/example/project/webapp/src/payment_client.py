@@ -18,11 +18,14 @@ class PaymentClient(ClientBase):
     ) -> str:
         async with cls.get_channel() as channel:
             stub = payment_pb2_grpc.PaymentServiceStub(channel)
-            request = payment_pb2.ProcessPaymentRequest(
+            payment = payment_pb2.Payment(
                 payment_id=payment_id,
                 card_holder_name=card_holder_name,
                 card_number=card_number,
                 price=price,
+            )
+            request = payment_pb2.ProcessPaymentRequest(
+                payments=[payment],
             )
             response = await stub.ProcessPayment(request)
             return response.message

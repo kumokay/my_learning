@@ -44,7 +44,7 @@ class BiddingServer(BiddingService):
     ) -> HighestBidReply:
         logging.info("[GetHighestBid] Serving request %s", request)
         result = QueryExecutor.get_highest_bid(
-            request.auction_id_filter, 
+            request.auction_ids_filter, 
             request.read_from_leader,
         )
         bids = [
